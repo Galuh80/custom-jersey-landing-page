@@ -1,0 +1,924 @@
+---
+// Design Editor - Realistic 3D Jersey with GLTF model (shirt_baked.glb)
+// Fallback to improved procedural mesh if GLTF fails to load
+---
+
+<section
+    id="design-editor"
+    class="py-16 md:py-24 bg-dark-900/60 border-y border-white/5"
+>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 md:mb-14 reveal">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-sm font-medium mb-4">
+                Design Editor · 3D
+            </div>
+            <h2 class="font-display text-3xl md:text-4xl font-bold mb-3">
+                Buat Desain Jersey-mu
+            </h2>
+            <p class="text-white/60 max-w-2xl mx-auto text-sm md:text-base">
+                Atur warna, garis, dan logo. Preview 3D realistis. Export ke PNG
+                lalu kirim ke kami untuk produksi.
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-6 lg:gap-8">
+            <!-- Controls -->
+            <div class="lg:col-span-2 order-2 lg:order-1 space-y-4 editor-panel reveal">
+                <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
+                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
+                        Jenis Produk
+                    </h3>
+                    <div class="flex gap-2">
+                        <button
+                            type="button"
+                            id="btn-jersey"
+                            class="flex-1 py-2.5 rounded-xl text-sm font-medium bg-brand-500 text-white transition"
+                        >
+                            Jersey
+                        </button>
+                        <button
+                            type="button"
+                            id="btn-pants"
+                            class="flex-1 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white/70 hover:bg-white/10 transition"
+                        >
+                            Celana
+                        </button>
+                    </div>
+                    <p class="text-xs text-white/35 mt-2">
+                        Preview 3D interaktif untuk Jersey dan Celana. Drag
+                        untuk memutar model.
+                    </p>
+                </div>
+
+                <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
+                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
+                        Warna Dasar
+                    </h3>
+                    <div class="flex items-center gap-4">
+                        <input type="color" id="color-base" value="#0ea5e9" />
+                        <div class="flex-1">
+                            <input
+                                type="range"
+                                id="brightness"
+                                min="40"
+                                max="100"
+                                value="100"
+                                class="editor-slider w-full"
+                            />
+                            <p class="text-xs text-white/40 mt-1">Brightness</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-3" id="preset-colors">
+                        <button
+                            data-color="#0ea5e9"
+                            class="w-8 h-8 rounded-lg bg-sky-500 border-2 border-white/30 hover:scale-110 transition"
+                            title="Sky"
+                        ></button>
+                        <button
+                            data-color="#ef4444"
+                            class="w-8 h-8 rounded-lg bg-red-500 border-2 border-transparent hover:scale-110 transition"
+                            title="Red"
+                        ></button>
+                        <button
+                            data-color="#22c55e"
+                            class="w-8 h-8 rounded-lg bg-green-500 border-2 border-transparent hover:scale-110 transition"
+                            title="Green"
+                        ></button>
+                        <button
+                            data-color="#eab308"
+                            class="w-8 h-8 rounded-lg bg-yellow-500 border-2 border-transparent hover:scale-110 transition"
+                            title="Yellow"
+                        ></button>
+                        <button
+                            data-color="#1e293b"
+                            class="w-8 h-8 rounded-lg bg-slate-800 border-2 border-transparent hover:scale-110 transition"
+                            title="Dark"
+                        ></button>
+                        <button
+                            data-color="#ffffff"
+                            class="w-8 h-8 rounded-lg bg-white border-2 border-transparent hover:scale-110 transition"
+                            title="White"
+                        ></button>
+                        <button
+                            data-color="#000000"
+                            class="w-8 h-8 rounded-lg bg-black border-2 border-transparent hover:scale-110 transition"
+                            title="Black"
+                        ></button>
+                        <button
+                            data-color="#7c3aed"
+                            class="w-8 h-8 rounded-lg bg-violet-600 border-2 border-transparent hover:scale-110 transition"
+                            title="Violet"
+                        ></button>
+                    </div>
+                </div>
+
+                <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
+                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
+                        Garis & Aksen
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-white/60">
+                                Warna Garis
+                            </label>
+                            <input
+                                type="color"
+                                id="color-stripe"
+                                value="#ffffff"
+                            />
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm text-white/60 mb-1">
+                                <span>Jumlah Garis</span>
+                                <span id="stripe-count-label">2</span>
+                            </div>
+                            <input
+                                type="range"
+                                id="stripe-count"
+                                min="0"
+                                max="6"
+                                value="2"
+                                class="editor-slider w-full"
+                            />
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm text-white/60 mb-1">
+                                <span>Lebar Garis</span>
+                                <span id="stripe-width-label">8%</span>
+                            </div>
+                            <input
+                                type="range"
+                                id="stripe-width"
+                                min="2"
+                                max="20"
+                                value="8"
+                                class="editor-slider w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
+                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
+                        Logo / Crest
+                    </h3>
+                    <div class="space-y-3">
+                        <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-white/15 rounded-xl cursor-pointer hover:border-brand-500/40 transition">
+                            <span class="text-sm text-white/50" id="logo-label">
+                                Upload Logo (PNG transparan)
+                            </span>
+                            <input
+                                type="file"
+                                id="logo-upload"
+                                accept="image/png,image/jpeg,image/webp"
+                                class="hidden"
+                            />
+                        </label>
+                        <div>
+                            <div class="flex justify-between text-sm text-white/60 mb-1">
+                                <span>Ukuran Logo</span>
+                                <span id="logo-size-label">18%</span>
+                            </div>
+                            <input
+                                type="range"
+                                id="logo-size"
+                                min="8"
+                                max="40"
+                                value="18"
+                                class="editor-slider w-full"
+                            />
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm text-white/60 mb-1">
+                                <span>Posisi Vertikal</span>
+                                <span id="logo-y-label">32%</span>
+                            </div>
+                            <input
+                                type="range"
+                                id="logo-y"
+                                min="12"
+                                max="55"
+                                value="32"
+                                class="editor-slider w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button
+                        type="button"
+                        id="btn-export"
+                        class="flex-1 py-3 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-semibold text-sm transition btn-press shadow-lg shadow-brand-500/20"
+                    >
+                        Export PNG
+                    </button>
+                    <button
+                        type="button"
+                        id="btn-reset"
+                        class="py-3 px-5 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 font-medium text-sm transition btn-press"
+                    >
+                        Reset
+                    </button>
+                </div>
+                <p class="text-xs text-white/40 text-center">
+                    Export menghasilkan desain (texture) + preview 3D. Kirim ke
+                    WhatsApp untuk produksi.
+                </p>
+            </div>
+
+            <!-- 3D Preview -->
+            <div class="lg:col-span-3 order-1 lg:order-2 reveal">
+                <div
+                    class="relative bg-gradient-to-b from-dark-800/80 to-dark-900/80 border border-white/5 rounded-2xl overflow-hidden"
+                    style="min-height: 400px;"
+                >
+                    <div
+                        id="design-canvas-container"
+                        class="w-full h-[400px] sm:h-[460px] md:h-[540px] relative"
+                    >
+                        <div
+                            id="canvas-placeholder"
+                            class="absolute inset-0 flex items-center justify-center z-10"
+                        >
+                            <div class="text-center">
+                                <div class="w-12 h-12 mx-auto mb-3 border-2 border-brand-500/30 border-t-brand-400 rounded-full animate-spin"></div>
+                                <p class="text-sm text-white/40">
+                                    Memuat model 3D...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-3 left-0 right-0 text-center pointer-events-none">
+                        <p class="text-xs text-white/30 bg-dark-950/50 inline-block px-3 py-1 rounded-full">
+                            Drag untuk putar · Scroll untuk zoom
+                        </p>
+                    </div>
+                    <div
+                        id="model-status"
+                        class="absolute top-3 left-3 text-xs text-white/40 bg-dark-950/60 px-2 py-1 rounded-lg"
+                    ></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Three.js r128 + GLTFLoader -->
+<script
+    is:inline
+    src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+></script>
+<script
+    is:inline
+    src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"
+></script>
+<script is:inline>
+    (function () {
+        function waitForLibs(cb, tries) {
+            tries = tries || 0;
+            if (
+                typeof THREE !== "undefined" &&
+                typeof THREE.GLTFLoader !== "undefined"
+            ) {
+                cb();
+            } else if (tries < 80) {
+                setTimeout(function () {
+                    waitForLibs(cb, tries + 1);
+                }, 50);
+            } else {
+                // Fallback without GLTFLoader name on THREE
+                if (typeof THREE !== "undefined") cb();
+                else console.error("Three.js failed to load");
+            }
+        }
+
+        waitForLibs(initEditor);
+
+        function initEditor() {
+            var container = document.getElementById("design-canvas-container");
+            var placeholder = document.getElementById("canvas-placeholder");
+            var statusEl = document.getElementById("model-status");
+            if (!container) return;
+
+            var productType = "jersey";
+            var baseColor = "#0ea5e9";
+            var stripeColor = "#ffffff";
+            var stripeCount = 2;
+            var stripeWidth = 8;
+            var logoImg = null;
+            var logoSize = 18;
+            var logoY = 32;
+            var brightness = 100;
+
+            var width = container.clientWidth;
+            var height = container.clientHeight;
+
+            var scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+
+            var camera = new THREE.PerspectiveCamera(
+                35,
+                width / height,
+                0.1,
+                100,
+            );
+            camera.position.set(0, 0.15, 2.4);
+
+            var renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                preserveDrawingBuffer: true,
+                alpha: true,
+            });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            if (renderer.outputEncoding !== undefined)
+                renderer.outputEncoding = THREE.sRGBEncoding;
+            if (renderer.toneMapping !== undefined) {
+                renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                renderer.toneMappingExposure = 1.1;
+            }
+            container.appendChild(renderer.domElement);
+
+            // Lights - soft studio look
+            scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+            var key = new THREE.DirectionalLight(0xffffff, 1.0);
+            key.position.set(2.5, 4, 3);
+            scene.add(key);
+            var fill = new THREE.DirectionalLight(0xa5d8ff, 0.35);
+            fill.position.set(-3, 1.5, -1);
+            scene.add(fill);
+            var rim = new THREE.DirectionalLight(0xffffff, 0.25);
+            rim.position.set(0, 2, -3);
+            scene.add(rim);
+
+            // Design texture
+            var texCanvas = document.createElement("canvas");
+            texCanvas.width = 1024;
+            texCanvas.height = 1024;
+            var texCtx = texCanvas.getContext("2d");
+            var designTexture = new THREE.CanvasTexture(texCanvas);
+            designTexture.needsUpdate = true;
+            if (designTexture.encoding !== undefined)
+                designTexture.encoding = THREE.sRGBEncoding;
+
+            var meshGroup = new THREE.Group();
+            scene.add(meshGroup);
+
+            var gltfShirt = null; // loaded model root
+            var shirtMesh = null; // main mesh with material
+            var useGltf = false;
+            var waistMat = null; // solid material for the shorts waistband
+
+            function setStatus(msg) {
+                if (statusEl) statusEl.textContent = msg || "";
+            }
+
+            function clearGroup() {
+                while (meshGroup.children.length) {
+                    var c = meshGroup.children[0];
+                    meshGroup.remove(c);
+                }
+            }
+
+            function setGroupTransform(scale, posY) {
+                meshGroup.scale.setScalar(scale);
+                meshGroup.position.set(0, posY, 0);
+            }
+
+            // Waistband uses a solid, darker shade of the base color (no print on the elastic)
+            function updateWaistColor() {
+                if (!waistMat) return;
+                var r = parseInt(baseColor.slice(1, 3), 16);
+                var g = parseInt(baseColor.slice(3, 5), 16);
+                var b = parseInt(baseColor.slice(5, 7), 16);
+                var f = (brightness / 100) * 0.32;
+                waistMat.color.setStyle(
+                    "rgb(" +
+                        Math.round(r * f) +
+                        "," +
+                        Math.round(g * f) +
+                        "," +
+                        Math.round(b * f) +
+                        ")",
+                );
+            }
+
+            function applyMaterialToObject(obj) {
+                obj.traverse(function (child) {
+                    if (child.isMesh) {
+                        // Prefer replacing material so our canvas texture shows
+                        var mat = new THREE.MeshStandardMaterial({
+                            map: designTexture,
+                            roughness: 0.65,
+                            metalness: 0.05,
+                            side: THREE.DoubleSide,
+                        });
+                        child.material = mat;
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                        if (!shirtMesh) shirtMesh = child;
+                    }
+                });
+            }
+
+            function buildProceduralJersey() {
+                clearGroup();
+                shirtMesh = null;
+                useGltf = false;
+                setStatus("Procedural mesh");
+
+                var mat = new THREE.MeshStandardMaterial({
+                    map: designTexture,
+                    roughness: 0.6,
+                    metalness: 0.04,
+                    side: THREE.DoubleSide,
+                });
+
+                // More organic torso using lathe-like approximation via scaled box + sleeves
+                var torso = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.35, 1.55, 0.32, 8, 8, 2),
+                    mat,
+                );
+                torso.position.y = 0.05;
+                // slight shoulder widen via scale on upper - approximate with second layer
+                meshGroup.add(torso);
+
+                var shoulder = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.55, 0.35, 0.34, 6, 2, 2),
+                    mat,
+                );
+                shoulder.position.y = 0.65;
+                meshGroup.add(shoulder);
+
+                var sleeveGeo = new THREE.CylinderGeometry(0.16, 0.2, 0.65, 20);
+                var leftS = new THREE.Mesh(sleeveGeo, mat);
+                leftS.rotation.z = Math.PI / 2.15;
+                leftS.position.set(-0.95, 0.55, 0);
+                meshGroup.add(leftS);
+
+                var rightS = new THREE.Mesh(sleeveGeo.clone(), mat);
+                rightS.rotation.z = -Math.PI / 2.15;
+                rightS.position.set(0.95, 0.55, 0);
+                meshGroup.add(rightS);
+
+                var collar = new THREE.Mesh(
+                    new THREE.TorusGeometry(0.26, 0.055, 10, 28, Math.PI),
+                    new THREE.MeshStandardMaterial({
+                        color: 0x1e293b,
+                        roughness: 0.55,
+                    }),
+                );
+                collar.rotation.x = Math.PI / 2;
+                collar.position.set(0, 0.82, 0.06);
+                meshGroup.add(collar);
+
+                setGroupTransform(0.95, -0.15);
+            }
+
+            function buildProceduralPants() {
+                clearGroup();
+                shirtMesh = null;
+                useGltf = false;
+                setStatus("Procedural shorts");
+
+                var mat = new THREE.MeshStandardMaterial({
+                    map: designTexture,
+                    roughness: 0.75,
+                    metalness: 0.02,
+                    side: THREE.DoubleSide,
+                });
+
+                // Elastic waistband: solid accent shade, no print
+                waistMat = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color(0x111827),
+                    roughness: 0.9,
+                    metalness: 0.0,
+                    side: THREE.DoubleSide,
+                });
+                updateWaistColor();
+
+                var shorts = new THREE.Group();
+
+                // Waistband (slightly bulged so it reads as an elastic band)
+                var waistband = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.46, 0.46, 0.16, 32, 2),
+                    waistMat,
+                );
+                waistband.scale.z = 0.7;
+                waistband.position.y = 0.61;
+                shorts.add(waistband);
+
+                // Subtle gather ridges on the band
+                [0.565, 0.61, 0.655].forEach(function (yy) {
+                    var ring = new THREE.Mesh(
+                        new THREE.CylinderGeometry(
+                            0.468,
+                            0.468,
+                            0.013,
+                            32,
+                            1,
+                            true,
+                        ),
+                        waistMat,
+                    );
+                    ring.scale.z = 0.7;
+                    ring.position.y = yy;
+                    shorts.add(ring);
+                });
+
+                // Loose body / hip
+                var body = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.44, 0.55, 0.44, 32, 4),
+                    mat,
+                );
+                body.scale.z = 0.7;
+                body.position.y = 0.33;
+                shorts.add(body);
+
+                // Crotch filler so both legs meet cleanly at the inseam
+                var crotch = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.34, 24, 16),
+                    mat,
+                );
+                crotch.scale.set(1.0, 0.95, 0.56);
+                crotch.position.set(0, 0.1, 0);
+                shorts.add(crotch);
+
+                // Short, loose legs: meet at the inseam, open into a small crotch V
+                var legGeo = new THREE.CylinderGeometry(
+                    0.28,
+                    0.26,
+                    0.72,
+                    28,
+                    3,
+                );
+                var leftLeg = new THREE.Mesh(legGeo, mat);
+                leftLeg.scale.z = 0.74;
+                leftLeg.position.set(-0.27, -0.2, 0);
+                leftLeg.rotation.z = -0.07;
+                shorts.add(leftLeg);
+
+                var rightLeg = new THREE.Mesh(legGeo.clone(), mat);
+                rightLeg.scale.z = 0.74;
+                rightLeg.position.set(0.27, -0.2, 0);
+                rightLeg.rotation.z = 0.07;
+                shorts.add(rightLeg);
+
+                meshGroup.add(shorts);
+                setGroupTransform(0.95, 0);
+            }
+
+            function loadGltfShirt() {
+                setStatus("Loading GLTF...");
+                var loader = null;
+                if (typeof THREE.GLTFLoader === "function") {
+                    loader = new THREE.GLTFLoader();
+                } else if (typeof GLTFLoader === "function") {
+                    loader = new GLTFLoader();
+                }
+
+                if (!loader) {
+                    console.warn("GLTFLoader not available, using procedural");
+                    buildProceduralJersey();
+                    if (placeholder) placeholder.style.display = "none";
+                    return;
+                }
+
+                loader.load(
+                    "/models/shirt_baked.glb",
+                    function (gltf) {
+                        clearGroup();
+                        setGroupTransform(1, 0);
+                        gltfShirt = gltf.scene;
+                        // Center and scale
+                        var box = new THREE.Box3().setFromObject(gltfShirt);
+                        var size = box.getSize(new THREE.Vector3());
+                        var center = box.getCenter(new THREE.Vector3());
+                        var maxDim = Math.max(size.x, size.y, size.z);
+                        var scale = 1.8 / maxDim;
+                        gltfShirt.scale.setScalar(scale);
+                        gltfShirt.position.sub(center.multiplyScalar(scale));
+                        gltfShirt.position.y -= 0.1;
+
+                        applyMaterialToObject(gltfShirt);
+                        meshGroup.add(gltfShirt);
+                        useGltf = true;
+                        setStatus("GLTF · shirt_baked");
+                        if (placeholder) placeholder.style.display = "none";
+                        drawTexture();
+                    },
+                    undefined,
+                    function (err) {
+                        console.warn(
+                            "GLTF load failed, fallback procedural",
+                            err,
+                        );
+                        buildProceduralJersey();
+                        if (placeholder) placeholder.style.display = "none";
+                        drawTexture();
+                    },
+                );
+            }
+
+            function drawTexture() {
+                var w = texCanvas.width;
+                var h = texCanvas.height;
+                texCtx.clearRect(0, 0, w, h);
+
+                var r = parseInt(baseColor.slice(1, 3), 16);
+                var g = parseInt(baseColor.slice(3, 5), 16);
+                var b = parseInt(baseColor.slice(5, 7), 16);
+                var f = brightness / 100;
+                texCtx.fillStyle =
+                    "rgb(" +
+                    Math.min(255, Math.round(r * f)) +
+                    "," +
+                    Math.min(255, Math.round(g * f)) +
+                    "," +
+                    Math.min(255, Math.round(b * f)) +
+                    ")";
+                texCtx.fillRect(0, 0, w, h);
+
+                if (stripeCount > 0) {
+                    texCtx.fillStyle = stripeColor;
+                    var stripeW = (stripeWidth / 100) * w;
+                    var gap = w / (stripeCount + 1);
+                    for (var i = 1; i <= stripeCount; i++) {
+                        var x = gap * i - stripeW / 2;
+                        texCtx.fillRect(x, 0, stripeW, h);
+                    }
+                }
+
+                if (logoImg) {
+                    var logoW = (logoSize / 100) * w;
+                    var logoH =
+                        logoW * (logoImg.height / Math.max(1, logoImg.width));
+                    var lx = (w - logoW) / 2;
+                    var ly = (logoY / 100) * h - logoH / 2;
+                    texCtx.drawImage(logoImg, lx, ly, logoW, logoH);
+                }
+
+                designTexture.needsUpdate = true;
+                updateWaistColor();
+
+                // Update materials on current meshes
+                meshGroup.traverse(function (child) {
+                    if (
+                        child.isMesh &&
+                        child.material &&
+                        child.material.map === designTexture
+                    ) {
+                        child.material.needsUpdate = true;
+                    } else if (
+                        child.isMesh &&
+                        child.material &&
+                        !child.material.colorEquals
+                    ) {
+                        // If material has map, refresh
+                        if (child.material.map)
+                            child.material.map.needsUpdate = true;
+                    }
+                });
+            }
+
+            // Start with GLTF for jersey
+            loadGltfShirt();
+
+            // Orbit
+            var isDragging = false;
+            var prevX = 0,
+                prevY = 0;
+            var rotY = 0.35,
+                rotX = 0.12;
+
+            function ptrDown(e) {
+                isDragging = true;
+                prevX = e.clientX != null ? e.clientX : e.touches[0].clientX;
+                prevY = e.clientY != null ? e.clientY : e.touches[0].clientY;
+            }
+            function ptrMove(e) {
+                if (!isDragging) return;
+                var x = e.clientX != null ? e.clientX : e.touches[0].clientX;
+                var y = e.clientY != null ? e.clientY : e.touches[0].clientY;
+                rotY += (x - prevX) * 0.008;
+                rotX += (y - prevY) * 0.006;
+                rotX = Math.max(-0.55, Math.min(0.55, rotX));
+                prevX = x;
+                prevY = y;
+            }
+            function ptrUp() {
+                isDragging = false;
+            }
+
+            renderer.domElement.addEventListener("mousedown", ptrDown);
+            renderer.domElement.addEventListener("mousemove", ptrMove);
+            renderer.domElement.addEventListener("mouseup", ptrUp);
+            renderer.domElement.addEventListener("mouseleave", ptrUp);
+            renderer.domElement.addEventListener("touchstart", ptrDown, {
+                passive: true,
+            });
+            renderer.domElement.addEventListener("touchmove", ptrMove, {
+                passive: true,
+            });
+            renderer.domElement.addEventListener("touchend", ptrUp);
+            renderer.domElement.addEventListener(
+                "wheel",
+                function (e) {
+                    e.preventDefault();
+                    camera.position.z = Math.max(
+                        1.4,
+                        Math.min(4.5, camera.position.z + e.deltaY * 0.0015),
+                    );
+                },
+                { passive: false },
+            );
+
+            function animate() {
+                requestAnimationFrame(animate);
+                meshGroup.rotation.y = rotY;
+                meshGroup.rotation.x = rotX;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener("resize", function () {
+                var w = container.clientWidth;
+                var h = container.clientHeight;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            });
+
+            // UI
+            var colorBase = document.getElementById("color-base");
+            var colorStripe = document.getElementById("color-stripe");
+            var stripeCountEl = document.getElementById("stripe-count");
+            var stripeWidthEl = document.getElementById("stripe-width");
+            var logoSizeEl = document.getElementById("logo-size");
+            var logoYEl = document.getElementById("logo-y");
+            var brightnessEl = document.getElementById("brightness");
+            var logoUpload = document.getElementById("logo-upload");
+            var logoLabel = document.getElementById("logo-label");
+
+            colorBase.addEventListener("input", function (e) {
+                baseColor = e.target.value;
+                drawTexture();
+            });
+            colorStripe.addEventListener("input", function (e) {
+                stripeColor = e.target.value;
+                drawTexture();
+            });
+            stripeCountEl.addEventListener("input", function (e) {
+                stripeCount = +e.target.value;
+                document.getElementById("stripe-count-label").textContent =
+                    stripeCount;
+                drawTexture();
+            });
+            stripeWidthEl.addEventListener("input", function (e) {
+                stripeWidth = +e.target.value;
+                document.getElementById("stripe-width-label").textContent =
+                    stripeWidth + "%";
+                drawTexture();
+            });
+            logoSizeEl.addEventListener("input", function (e) {
+                logoSize = +e.target.value;
+                document.getElementById("logo-size-label").textContent =
+                    logoSize + "%";
+                drawTexture();
+            });
+            logoYEl.addEventListener("input", function (e) {
+                logoY = +e.target.value;
+                document.getElementById("logo-y-label").textContent =
+                    logoY + "%";
+                drawTexture();
+            });
+            brightnessEl.addEventListener("input", function (e) {
+                brightness = +e.target.value;
+                drawTexture();
+            });
+
+            logoUpload.addEventListener("change", function (e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                    var img = new Image();
+                    img.onload = function () {
+                        logoImg = img;
+                        logoLabel.textContent =
+                            file.name.length > 22
+                                ? file.name.slice(0, 20) + "…"
+                                : file.name;
+                        drawTexture();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            document
+                .querySelectorAll("#preset-colors button")
+                .forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        baseColor = btn.dataset.color;
+                        colorBase.value = baseColor;
+                        document
+                            .querySelectorAll("#preset-colors button")
+                            .forEach(function (b) {
+                                b.classList.remove("border-white/30");
+                                b.classList.add("border-transparent");
+                            });
+                        btn.classList.add("border-white/30");
+                        btn.classList.remove("border-transparent");
+                        drawTexture();
+                    });
+                });
+
+            document
+                .getElementById("btn-jersey")
+                .addEventListener("click", function () {
+                    productType = "jersey";
+                    document.getElementById("btn-jersey").className =
+                        "flex-1 py-2.5 rounded-xl text-sm font-medium bg-brand-500 text-white transition";
+                    document.getElementById("btn-pants").className =
+                        "flex-1 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white/70 hover:bg-white/10 transition";
+                    if (gltfShirt) {
+                        clearGroup();
+                        setGroupTransform(1, 0);
+                        meshGroup.add(gltfShirt);
+                        useGltf = true;
+                        setStatus("GLTF · shirt_baked");
+                        drawTexture();
+                    } else {
+                        loadGltfShirt();
+                    }
+                });
+
+            document
+                .getElementById("btn-pants")
+                .addEventListener("click", function () {
+                    productType = "pants";
+                    document.getElementById("btn-pants").className =
+                        "flex-1 py-2.5 rounded-xl text-sm font-medium bg-brand-500 text-white transition";
+                    document.getElementById("btn-jersey").className =
+                        "flex-1 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white/70 hover:bg-white/10 transition";
+                    buildProceduralPants();
+                    drawTexture();
+                });
+
+            document
+                .getElementById("btn-export")
+                .addEventListener("click", function () {
+                    var exportCanvas = document.createElement("canvas");
+                    exportCanvas.width = 1024;
+                    exportCanvas.height = 1024;
+                    var ctx = exportCanvas.getContext("2d");
+                    ctx.drawImage(texCanvas, 0, 0, 1024, 1024);
+                    var link = document.createElement("a");
+                    link.download = "jersey-design-" + Date.now() + ".png";
+                    link.href = exportCanvas.toDataURL("image/png");
+                    link.click();
+
+                    renderer.render(scene, camera);
+                    setTimeout(function () {
+                        var link2 = document.createElement("a");
+                        link2.download =
+                            "jersey-3d-preview-" + Date.now() + ".png";
+                        link2.href = renderer.domElement.toDataURL("image/png");
+                        link2.click();
+                    }, 250);
+                });
+
+            document
+                .getElementById("btn-reset")
+                .addEventListener("click", function () {
+                    baseColor = "#0ea5e9";
+                    stripeColor = "#ffffff";
+                    stripeCount = 2;
+                    stripeWidth = 8;
+                    logoSize = 18;
+                    logoY = 32;
+                    brightness = 100;
+                    logoImg = null;
+                    colorBase.value = baseColor;
+                    colorStripe.value = stripeColor;
+                    stripeCountEl.value = 2;
+                    stripeWidthEl.value = 8;
+                    logoSizeEl.value = 18;
+                    logoYEl.value = 32;
+                    brightnessEl.value = 100;
+                    document.getElementById("stripe-count-label").textContent =
+                        "2";
+                    document.getElementById("stripe-width-label").textContent =
+                        "8%";
+                    document.getElementById("logo-size-label").textContent =
+                        "18%";
+                    document.getElementById("logo-y-label").textContent = "32%";
+                    logoLabel.textContent = "Upload Logo (PNG transparan)";
+                    logoUpload.value = "";
+                    drawTexture();
+                });
+        }
+    })();
+</script>

@@ -2,9 +2,9 @@
 /* Saat sudah install Tailwind resmi, ganti Layout agar import file ini */
 
 :root {
-  --brand-400: #38bdf8;
-  --brand-500: #0ea5e9;
-  --brand-600: #0284c7;
+  --brand-400: #fef343;
+  --brand-500: #fef013;
+  --brand-600: #dfd201;
 }
 
 html {
@@ -109,6 +109,11 @@ html {
 #design-canvas-container {
   touch-action: none;
   user-select: none;
+}
+
+#design-canvas-container canvas {
+  display: block;
+  max-width: 100%;
 }
 
 .editor-panel input[type="color"] {

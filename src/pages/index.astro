@@ -1,348 +1,696 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import DesignEditor from '../components/DesignEditor.astro';
+import Layout from "../layouts/Layout.astro";
+import DesignEditor from "../components/DesignEditor.astro";
 
 const categories = [
-  { name: "Football / Futsal", price: "Rp 65.000", desc: "Jersey full print untuk sepak bola & futsal. Bahan dry-fit breathable.", features: ["Dry-fit", "Full sublimation", "Custom nama & nomor"] },
-  { name: "Basketball", price: "Rp 70.000", desc: "Jersey basket dengan potongan modern dan bahan anti-bacterial.", features: ["Breathable mesh", "Anti-bacterial", "Custom logo"] },
-  { name: "Esports / Gaming", price: "Rp 75.000", desc: "Jersey gaming dengan desain bold dan bahan nyaman seharian.", features: ["Full print", "Premium stitching", "Logo sponsor"] },
-  { name: "Volleyball / Badminton", price: "Rp 65.000", desc: "Ringan dan elastis, cocok untuk gerakan cepat di lapangan.", features: ["Stretch fabric", "Lightweight", "Full custom"] },
-  { name: "Cycling / Running", price: "Rp 85.000", desc: "Jersey performa tinggi dengan bahan moisture-wicking.", features: ["Moisture-wicking", "Aerodynamic", "Reflective option"] },
-  { name: "Custom Set (Jersey + Celana)", price: "Rp 110.000", desc: "Satu set lengkap matching untuk tampilan tim yang kompak.", features: ["Matching design", "Full custom", "Hemat paket"] },
+    {
+        name: "Football / Futsal",
+        price: "Rp 65.000",
+        desc: "Jersey full print untuk sepak bola & futsal. Bahan dry-fit breathable.",
+        features: ["Dry-fit", "Full sublimation", "Custom nama & nomor"],
+    },
+    {
+        name: "Basketball",
+        price: "Rp 70.000",
+        desc: "Jersey basket dengan potongan modern dan bahan anti-bacterial.",
+        features: ["Breathable mesh", "Anti-bacterial", "Custom logo"],
+    },
+    {
+        name: "Esports / Gaming",
+        price: "Rp 75.000",
+        desc: "Jersey gaming dengan desain bold dan bahan nyaman seharian.",
+        features: ["Full print", "Premium stitching", "Logo sponsor"],
+    },
+    {
+        name: "Volleyball / Badminton",
+        price: "Rp 65.000",
+        desc: "Ringan dan elastis, cocok untuk gerakan cepat di lapangan.",
+        features: ["Stretch fabric", "Lightweight", "Full custom"],
+    },
+    {
+        name: "Cycling / Running",
+        price: "Rp 85.000",
+        desc: "Jersey performa tinggi dengan bahan moisture-wicking.",
+        features: ["Moisture-wicking", "Aerodynamic", "Reflective option"],
+    },
+    {
+        name: "Custom Set (Jersey + Celana)",
+        price: "Rp 110.000",
+        desc: "Satu set lengkap matching untuk tampilan tim yang kompak.",
+        features: ["Matching design", "Full custom", "Hemat paket"],
+    },
 ];
 
 const benefits = [
-  { title: "Desain Gratis", desc: "Tim designer siap bantu wujudkan ide kamu, termasuk dari AI concept.", icon: "🎨" },
-  { title: "No Minimum Order", desc: "Bisa order satuan. Cocok untuk personal maupun tim kecil.", icon: "📦" },
-  { title: "Produksi Transparan", desc: "Proses di-update real-time. Anti ghosting, anti lama.", icon: "🔍" },
-  { title: "Bahan Premium", desc: "Dry-fit, moisture-wicking, dan opsi bahan pro sesuai budget.", icon: "👕" },
+    {
+        title: "Desain Gratis",
+        desc: "Tim designer siap bantu wujudkan ide kamu, termasuk dari AI concept.",
+        icon: "🎨",
+    },
+    {
+        title: "No Minimum Order",
+        desc: "Bisa order satuan. Cocok untuk personal maupun tim kecil.",
+        icon: "📦",
+    },
+    {
+        title: "Produksi Transparan",
+        desc: "Proses di-update real-time. Anti ghosting, anti lama.",
+        icon: "🔍",
+    },
+    {
+        title: "Bahan Premium",
+        desc: "Dry-fit, moisture-wicking, dan opsi bahan pro sesuai budget.",
+        icon: "👕",
+    },
 ];
 
 const steps = [
-  { step: "01", title: "Konsultasi", desc: "Chat WhatsApp, ceritakan kebutuhan & kirim referensi." },
-  { step: "02", title: "Desain & Mockup", desc: "Kami buatkan mockup. Revisi sampai kamu approve." },
-  { step: "03", title: "Produksi", desc: "Setelah DP, kami produksi. Progress di-update real-time." },
-  { step: "04", title: "Pengiriman", desc: "Jersey dikirim ke alamat kamu. Ready dipakai!" },
+    {
+        step: "01",
+        title: "Konsultasi",
+        desc: "Chat WhatsApp, ceritakan kebutuhan & kirim referensi.",
+    },
+    {
+        step: "02",
+        title: "Desain & Mockup",
+        desc: "Kami buatkan mockup. Revisi sampai kamu approve.",
+    },
+    {
+        step: "03",
+        title: "Produksi",
+        desc: "Setelah DP, kami produksi. Progress di-update real-time.",
+    },
+    {
+        step: "04",
+        title: "Pengiriman",
+        desc: "Jersey dikirim ke alamat kamu. Ready dipakai!",
+    },
 ];
 
 const faqs = [
-  { q: "Berapa minimum order?", a: "Tidak ada minimum order. Bisa mulai dari 1 pcs. Harga lebih hemat untuk quantity lebih besar." },
-  { q: "Berapa lama proses produksi?", a: "Rata-rata 1–7 hari kerja tergantung quantity dan antrian. Ada opsi express untuk kebutuhan mendesak." },
-  { q: "Apakah desain benar-benar gratis?", a: "Ya. Desain dan revisi (reasonable) tidak dikenakan biaya tambahan." },
-  { q: "Bahan apa saja yang tersedia?", a: "Dry-fit, Milano, Serena, dan beberapa opsi premium lainnya. Kami sesuaikan dengan budget dan kebutuhan." },
-  { q: "Bagaimana sistem pembayaran?", a: "Biasanya DP 50–70% di awal, pelunasan sebelum pengiriman. Transfer bank / e-wallet tersedia." },
+    {
+        q: "Berapa minimum order?",
+        a: "Tidak ada minimum order. Bisa mulai dari 1 pcs. Harga lebih hemat untuk quantity lebih besar.",
+    },
+    {
+        q: "Berapa lama proses produksi?",
+        a: "Rata-rata 1–7 hari kerja tergantung quantity dan antrian. Ada opsi express untuk kebutuhan mendesak.",
+    },
+    {
+        q: "Apakah desain benar-benar gratis?",
+        a: "Ya. Desain dan revisi (reasonable) tidak dikenakan biaya tambahan.",
+    },
+    {
+        q: "Bahan apa saja yang tersedia?",
+        a: "Dry-fit, Milano, Serena, dan beberapa opsi premium lainnya. Kami sesuaikan dengan budget dan kebutuhan.",
+    },
+    {
+        q: "Bagaimana sistem pembayaran?",
+        a: "Biasanya DP 50–70% di awal, pelunasan sebelum pengiriman. Transfer bank / e-wallet tersedia.",
+    },
 ];
 ---
 
 <Layout>
-  <!-- NAVBAR -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-dark-950/80 backdrop-blur-md border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 md:h-20">
-        <a href="/" class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center font-display font-bold text-lg">CJ</div>
-          <span class="font-display font-bold text-xl tracking-tight hidden sm:block">CustomJersey</span>
-        </a>
-        <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-white/70">
-          <a href="#design-editor" class="hover:text-white transition">Design Editor</a>
-          <a href="#cara-order" class="hover:text-white transition">Cara Order</a>
-          <a href="#kategori" class="hover:text-white transition">Kategori</a>
-          <a href="#portfolio" class="hover:text-white transition">Portfolio</a>
-          <a href="#kenapa" class="hover:text-white transition">Kenapa Kami</a>
-          <a href="#faq" class="hover:text-white transition">FAQ</a>
-        </nav>
-        <div class="flex items-center gap-3">
-          <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20custom%20jersey" target="_blank" class="hidden sm:inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-white text-sm font-semibold px-4 py-2.5 rounded-full transition shadow-lg shadow-brand-500/20 btn-press">
-            Konsultasi Gratis
-          </a>
-          <!-- Mobile hamburger -->
-          <button type="button" id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition" aria-label="Menu">
-            <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+    <!-- NAVBAR -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-dark-950/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <a href="/" class="flex items-center gap-2">
+                    <img
+                        src="/logo.png"
+                        alt="Surly Apparel logo"
+                        width="40"
+                        height="40"
+                        class="w-10 h-10 object-contain"
+                    />
+                    <span class="font-display font-bold text-xl tracking-tight hidden sm:block whitespace-nowrap">
+                        Surly Apparel
+                    </span>
+                </a>
+                <nav class="hidden lg:flex items-center gap-6 lg:gap-8 text-sm font-medium text-white/70">
+                    <a
+                        href="#design-editor"
+                        class="hover:text-white transition"
+                    >
+                        Design Editor
+                    </a>
+                    <a href="#cara-order" class="hover:text-white transition">
+                        Cara Order
+                    </a>
+                    <a href="#kategori" class="hover:text-white transition">
+                        Kategori
+                    </a>
+                    <a href="#portfolio" class="hover:text-white transition">
+                        Portfolio
+                    </a>
+                    <a href="#kenapa" class="hover:text-white transition">
+                        Kenapa Kami
+                    </a>
+                    <a href="#faq" class="hover:text-white transition">
+                        FAQ
+                    </a>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <a
+                        href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20custom%20jersey"
+                        target="_blank"
+                        class="hidden sm:inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 text-sm font-semibold px-4 py-2.5 rounded-full transition shadow-lg shadow-brand-500/20 btn-press whitespace-nowrap"
+                    >
+                        Konsultasi Gratis
+                    </a>
+                    <!-- Mobile hamburger -->
+                    <button
+                        type="button"
+                        id="mobile-menu-btn"
+                        class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition"
+                        aria-label="Menu"
+                    >
+                        <svg
+                            id="icon-open"
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
+                        <svg
+                            id="icon-close"
+                            class="w-5 h-5 hidden"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- Mobile menu panel -->
-    <div id="mobile-menu" class="md:hidden hidden border-t border-white/5 bg-dark-950/95 backdrop-blur-md">
-      <nav class="flex flex-col px-4 py-4 gap-1 text-sm font-medium">
-        <a href="#design-editor" class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80">Design Editor</a>
-        <a href="#cara-order" class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80">Cara Order</a>
-        <a href="#kategori" class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80">Kategori</a>
-        <a href="#portfolio" class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80">Portfolio</a>
-        <a href="#kenapa" class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80">Kenapa Kami</a>
-        <a href="#faq" class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80">FAQ</a>
-        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20custom%20jersey" target="_blank" class="mt-2 mx-4 py-3 rounded-full bg-brand-500 text-center font-semibold text-white">Konsultasi Gratis</a>
-      </nav>
-    </div>
-  </header>
-  <script is:inline>
-    document.addEventListener('DOMContentLoaded', () => {
-      const btn = document.getElementById('mobile-menu-btn');
-      const menu = document.getElementById('mobile-menu');
-      const iconOpen = document.getElementById('icon-open');
-      const iconClose = document.getElementById('icon-close');
-      if (!btn || !menu) return;
-      btn.addEventListener('click', () => {
-        const open = menu.classList.toggle('hidden') === false;
-        iconOpen.classList.toggle('hidden', open);
-        iconClose.classList.toggle('hidden', !open);
-      });
-      document.querySelectorAll('.mobile-nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-          menu.classList.add('hidden');
-          iconOpen.classList.remove('hidden');
-          iconClose.classList.add('hidden');
+        <!-- Mobile menu panel -->
+        <div
+            id="mobile-menu"
+            class="lg:hidden hidden border-t border-white/5 bg-dark-950/95 backdrop-blur-md"
+        >
+            <nav class="flex flex-col px-4 py-4 gap-1 text-sm font-medium">
+                <a
+                    href="#design-editor"
+                    class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80"
+                >
+                    Design Editor
+                </a>
+                <a
+                    href="#cara-order"
+                    class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80"
+                >
+                    Cara Order
+                </a>
+                <a
+                    href="#kategori"
+                    class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80"
+                >
+                    Kategori
+                </a>
+                <a
+                    href="#portfolio"
+                    class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80"
+                >
+                    Portfolio
+                </a>
+                <a
+                    href="#kenapa"
+                    class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80"
+                >
+                    Kenapa Kami
+                </a>
+                <a
+                    href="#faq"
+                    class="mobile-nav-link px-4 py-3 rounded-lg hover:bg-white/5 text-white/80"
+                >
+                    FAQ
+                </a>
+                <a
+                    href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20custom%20jersey"
+                    target="_blank"
+                    class="mt-2 mx-4 py-3 rounded-full bg-brand-500 text-center font-semibold text-dark-950"
+                >
+                    Konsultasi Gratis
+                </a>
+            </nav>
+        </div>
+    </header>
+    <script is:inline>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("mobile-menu-btn");
+            const menu = document.getElementById("mobile-menu");
+            const iconOpen = document.getElementById("icon-open");
+            const iconClose = document.getElementById("icon-close");
+            if (!btn || !menu) return;
+            btn.addEventListener("click", () => {
+                const open = menu.classList.toggle("hidden") === false;
+                iconOpen.classList.toggle("hidden", open);
+                iconClose.classList.toggle("hidden", !open);
+            });
+            document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+                link.addEventListener("click", () => {
+                    menu.classList.add("hidden");
+                    iconOpen.classList.remove("hidden");
+                    iconClose.classList.add("hidden");
+                });
+            });
         });
-      });
-    });
-  </script>
+    </script>
+    <main>
+        <!-- HERO (Momuto style) -->
+        <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-brand-900/20 via-dark-950 to-dark-950"></div>
+            <div class="absolute top-1/4 -right-32 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-sm font-medium mb-6">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse"></span>
+                            Produksi Cepat • Desain Bebas
+                        </div>
+                        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
+                            Wear Your
+                            <br />
+                            <span class="bg-gradient-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent">
+                                Identity
+                            </span>
+                        </h1>
+                        <p class="text-lg text-white/70 max-w-lg mb-8 leading-relaxed">
+                            Buat jersey custom premium sesuai identitas tim
+                            kamu. Desain gratis, no minimum order, bahan
+                            pro-quality, dan pengiriman ke seluruh Indonesia.
+                        </p>
+                        <div class="flex flex-wrap gap-4 mb-10">
+                            <div class="flex items-center gap-2 text-sm text-white/80">
+                                ✓ Free Design
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-white/80">
+                                ✓ No Minimum
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-white/80">
+                                ✓ Pro Fabric
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-white/80">
+                                ✓ 1-7 Hari Kerja
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a
+                                href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20custom%20jersey"
+                                target="_blank"
+                                class="inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 font-semibold px-7 py-3.5 rounded-full transition shadow-xl shadow-brand-500/25 mobile-full-btn btn-press"
+                            >
+                                Mulai Custom Sekarang →
+                            </a>
+                            <a
+                                href="#portfolio"
+                                class="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium px-7 py-3.5 rounded-full transition mobile-full-btn btn-press"
+                            >
+                                Lihat Portfolio
+                            </a>
+                        </div>
+                    </div>
+                    <div class="relative flex justify-center lg:justify-end">
+                        <!-- soft brand glow behind the cutout -->
+                        <div class="pointer-events-none absolute inset-x-0 top-20 bottom-16 mx-auto w-2/3 max-w-sm rounded-full bg-brand-500/15 blur-3xl"></div>
 
-  <main>
-    <!-- HERO (Momuto style) -->
-    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-b from-brand-900/20 via-dark-950 to-dark-950"></div>
-      <div class="absolute top-1/4 -right-32 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-sm font-medium mb-6">
-              <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse"></span>
-              Produksi Cepat • Desain Bebas
+                        <picture class="contents">
+                            <source
+                                srcset="/hero-cutout.webp"
+                                type="image/webp"
+                            />
+                            <img
+                                src="/hero-cutout.png"
+                                alt="Model memakai jersey custom Surly Apparel"
+                                width="896"
+                                height="1195"
+                                class="relative z-10 h-auto w-full max-w-[520px] object-contain drop-shadow-2xl animate-float"
+                                style="-webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 78%, transparent 100%)"
+                            />
+                        </picture>
+
+                        <div class="absolute z-20 -bottom-2 -left-2 bg-dark-800/90 backdrop-blur border border-white/10 rounded-2xl px-5 py-3 shadow-xl lg:-left-6">
+                            <p class="text-2xl font-display font-bold text-brand-400">
+                                2.600+
+                            </p>
+                            <p class="text-xs text-white/50">
+                                Tim sudah custom
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
-              Wear Your<br />
-              <span class="bg-gradient-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent">Identity</span>
-            </h1>
-            <p class="text-lg text-white/70 max-w-lg mb-8 leading-relaxed">
-              Buat jersey custom premium sesuai identitas tim kamu. Desain gratis, no minimum order, bahan pro-quality, dan pengiriman ke seluruh Indonesia.
-            </p>
-            <div class="flex flex-wrap gap-4 mb-10">
-              <div class="flex items-center gap-2 text-sm text-white/80">✓ Free Design</div>
-              <div class="flex items-center gap-2 text-sm text-white/80">✓ No Minimum</div>
-              <div class="flex items-center gap-2 text-sm text-white/80">✓ Pro Fabric</div>
-              <div class="flex items-center gap-2 text-sm text-white/80">✓ 1-7 Hari Kerja</div>
+        </section>
+
+        <!-- DESIGN EDITOR -->
+        <DesignEditor />
+
+        <!-- THREE WAYS (Momuto) -->
+        <section id="cara-order" class="py-20 md:py-28 bg-dark-900/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-14 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                        Tiga Cara Dapatkan Jersey-mu
+                    </h2>
+                    <p class="text-white/60 max-w-2xl mx-auto">
+                        Pilih cara yang paling nyaman. Semua opsi mendapatkan
+                        kualitas yang sama.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+                    <div class="bg-dark-800/80 border border-white/5 hover:border-brand-500/30 rounded-2xl p-7 transition hover:-translate-y-1">
+                        <div class="text-5xl font-display font-bold text-white/5 mb-2">
+                            01
+                        </div>
+                        <h3 class="font-display text-xl font-bold mb-1">
+                            Ready Design
+                        </h3>
+                        <p class="text-sm text-brand-400 font-medium mb-3">
+                            Paling Cepat
+                        </p>
+                        <p class="text-white/60 text-sm mb-6">
+                            Pilih dari ratusan template. Ganti warna, logo, nama
+                            & nomor.
+                        </p>
+                        <ul class="space-y-2 text-sm text-white/70 mb-6">
+                            <li>✓ Template siap pakai</li>
+                            <li>✓ Revisi cepat</li>
+                            <li>✓ Harga lebih hemat</li>
+                        </ul>
+                        <a
+                            href="#kategori"
+                            class="text-sm font-semibold text-brand-400"
+                        >
+                            Lihat Template →
+                        </a>
+                    </div>
+                    <div class="bg-dark-800/80 border border-brand-500/40 rounded-2xl p-7 transition hover:-translate-y-1 relative">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand-500 text-dark-950 text-xs font-bold rounded-full">
+                            POPULER
+                        </div>
+                        <div class="text-5xl font-display font-bold text-white/5 mb-2">
+                            02
+                        </div>
+                        <h3 class="font-display text-xl font-bold mb-1">
+                            Custom Design
+                        </h3>
+                        <p class="text-sm text-brand-400 font-medium mb-3">
+                            Paling Fleksibel
+                        </p>
+                        <p class="text-white/60 text-sm mb-6">
+                            Kirim konsep atau AI image. Kami wujudkan mockup
+                            production-ready 1-2 hari.
+                        </p>
+                        <ul class="space-y-2 text-sm text-white/70 mb-6">
+                            <li>✓ Desain 100% unik</li>
+                            <li>✓ Free revisi</li>
+                            <li>✓ Support AI concept</li>
+                        </ul>
+                        <a
+                            href="https://wa.me/6281234567890"
+                            target="_blank"
+                            class="text-sm font-semibold text-brand-400"
+                        >
+                            Konsultasi Desain →
+                        </a>
+                    </div>
+                    <div class="bg-dark-800/80 border border-white/5 hover:border-brand-500/30 rounded-2xl p-7 transition hover:-translate-y-1">
+                        <div class="text-5xl font-display font-bold text-white/5 mb-2">
+                            03
+                        </div>
+                        <h3 class="font-display text-xl font-bold mb-1">
+                            Kirim File Sendiri
+                        </h3>
+                        <p class="text-sm text-brand-400 font-medium mb-3">
+                            Punya Desain Jadi
+                        </p>
+                        <p class="text-white/60 text-sm mb-6">
+                            Sudah punya file AI/PSD/PDF? Langsung kirim, kami
+                            cek & proses.
+                        </p>
+                        <ul class="space-y-2 text-sm text-white/70 mb-6">
+                            <li>✓ Support AI/PSD</li>
+                            <li>✓ Cek kelayakan gratis</li>
+                            <li>✓ Produksi langsung</li>
+                        </ul>
+                        <a
+                            href="https://wa.me/6281234567890"
+                            target="_blank"
+                            class="text-sm font-semibold text-brand-400"
+                        >
+                            Kirim File →
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="flex flex-col sm:flex-row gap-4">
-              <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20custom%20jersey" target="_blank" class="inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-400 text-white font-semibold px-7 py-3.5 rounded-full transition shadow-xl shadow-brand-500/25 mobile-full-btn btn-press">
-                Mulai Custom Sekarang →
-              </a>
-              <a href="#portfolio" class="inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium px-7 py-3.5 rounded-full transition mobile-full-btn btn-press">
-                Lihat Portfolio
-              </a>
+        </section>
+
+        <!-- CATEGORIES (UNO style) -->
+        <section id="kategori" class="py-20 md:py-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-14 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                        Kategori Jersey
+                    </h2>
+                    <p class="text-white/60 max-w-2xl mx-auto">
+                        Pilih jenis jersey sesuai olahraga atau kebutuhan tim
+                        kamu.
+                    </p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {categories.map((cat) => (
+                        <div class="group bg-dark-800/50 border border-white/5 hover:border-brand-500/30 rounded-2xl p-6 transition hover:-translate-y-1">
+                            <div class="aspect-[16/10] rounded-xl bg-gradient-to-br from-dark-700 to-dark-800 mb-5 flex items-center justify-center border border-white/5">
+                                <span class="text-white/20 text-sm">
+                                    Foto Produk
+                                </span>
+                            </div>
+                            <h3 class="font-display text-lg font-bold mb-1">
+                                {cat.name}
+                            </h3>
+                            <p class="text-brand-400 font-semibold text-sm mb-3">
+                                Mulai dari {cat.price}
+                            </p>
+                            <p class="text-white/55 text-sm mb-4">{cat.desc}</p>
+                            <ul class="space-y-1.5 mb-5">
+                                {cat.features.map((f) => (
+                                    <li class="text-xs text-white/50 flex items-center gap-1.5">
+                                        <span class="w-1 h-1 rounded-full bg-brand-400"></span>
+                                        {f}
+                                    </li>
+                                ))}
+                            </ul>
+                            <a
+                                href="https://wa.me/6281234567890"
+                                target="_blank"
+                                class="text-sm font-semibold text-white group-hover:text-brand-400 transition"
+                            >
+                                Order Sekarang →
+                            </a>
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
-          <div class="relative">
-            <div class="aspect-[4/5] rounded-3xl bg-gradient-to-br from-dark-800 to-dark-900 border border-white/10 overflow-hidden shadow-2xl flex items-center justify-center">
-              <div class="text-center p-8">
-                <p class="text-white/50 text-sm">Ganti dengan foto jersey terbaik</p>
-                <p class="text-white/30 text-xs mt-1">Rekomendasi: full body mockup</p>
-              </div>
+        </section>
+
+        <!-- PORTFOLIO -->
+        <section id="portfolio" class="py-20 md:py-28 bg-dark-900/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+                    <div>
+                        <h2 class="font-display text-3xl md:text-4xl font-bold mb-3">
+                            Portfolio Real Work
+                        </h2>
+                        <p class="text-white/60 max-w-xl">
+                            Jersey yang sudah kami produksi untuk ratusan tim.
+                        </p>
+                    </div>
+                    <a
+                        href="https://instagram.com/"
+                        target="_blank"
+                        class="text-sm font-medium text-brand-400 hover:text-brand-300"
+                    >
+                        Lihat di Instagram →
+                    </a>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div class="aspect-square rounded-xl bg-dark-800 border border-white/5 flex items-center justify-center">
+                            <p class="text-xs text-white/30">
+                                Portfolio {i + 1}
+                            </p>
+                        </div>
+                    ))}
+                </div>
             </div>
-            <div class="absolute -bottom-4 -left-4 bg-dark-800 border border-white/10 rounded-2xl px-5 py-3 shadow-xl">
-              <p class="text-2xl font-display font-bold text-brand-400">2.600+</p>
-              <p class="text-xs text-white/50">Tim sudah custom</p>
+        </section>
+
+        <!-- WHY US -->
+        <section id="kenapa" class="py-20 md:py-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-14 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                        Kenapa Pilih Kami?
+                    </h2>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {benefits.map((item) => (
+                        <div class="bg-dark-800/40 border border-white/5 rounded-2xl p-6 text-center hover:border-brand-500/20 transition">
+                            <div class="text-3xl mb-4">{item.icon}</div>
+                            <h3 class="font-display font-bold text-lg mb-2">
+                                {item.title}
+                            </h3>
+                            <p class="text-sm text-white/55">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <p class="font-display text-3xl md:text-4xl font-bold text-brand-400">
+                            2.600+
+                        </p>
+                        <p class="text-sm text-white/50 mt-1">Tim Terlayani</p>
+                    </div>
+                    <div>
+                        <p class="font-display text-3xl md:text-4xl font-bold text-brand-400">
+                            35.000+
+                        </p>
+                        <p class="text-sm text-white/50 mt-1">
+                            Jersey Diproduksi
+                        </p>
+                    </div>
+                    <div>
+                        <p class="font-display text-3xl md:text-4xl font-bold text-brand-400">
+                            1-7
+                        </p>
+                        <p class="text-sm text-white/50 mt-1">Hari Kerja</p>
+                    </div>
+                    <div>
+                        <p class="font-display text-3xl md:text-4xl font-bold text-brand-400">
+                            4.9
+                        </p>
+                        <p class="text-sm text-white/50 mt-1">Rating</p>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <!-- DESIGN EDITOR -->
-    <DesignEditor />
-
-    <!-- THREE WAYS (Momuto) -->
-    <section id="cara-order" class="py-20 md:py-28 bg-dark-900/50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14 reveal">
-          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Tiga Cara Dapatkan Jersey-mu</h2>
-          <p class="text-white/60 max-w-2xl mx-auto">Pilih cara yang paling nyaman. Semua opsi mendapatkan kualitas yang sama.</p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
-          <div class="bg-dark-800/80 border border-white/5 hover:border-brand-500/30 rounded-2xl p-7 transition hover:-translate-y-1">
-            <div class="text-5xl font-display font-bold text-white/5 mb-2">01</div>
-            <h3 class="font-display text-xl font-bold mb-1">Ready Design</h3>
-            <p class="text-sm text-brand-400 font-medium mb-3">Paling Cepat</p>
-            <p class="text-white/60 text-sm mb-6">Pilih dari ratusan template. Ganti warna, logo, nama & nomor.</p>
-            <ul class="space-y-2 text-sm text-white/70 mb-6">
-              <li>✓ Template siap pakai</li>
-              <li>✓ Revisi cepat</li>
-              <li>✓ Harga lebih hemat</li>
-            </ul>
-            <a href="#kategori" class="text-sm font-semibold text-brand-400">Lihat Template →</a>
-          </div>
-          <div class="bg-dark-800/80 border border-brand-500/40 rounded-2xl p-7 transition hover:-translate-y-1 relative">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand-500 text-xs font-bold rounded-full">POPULER</div>
-            <div class="text-5xl font-display font-bold text-white/5 mb-2">02</div>
-            <h3 class="font-display text-xl font-bold mb-1">Custom Design</h3>
-            <p class="text-sm text-brand-400 font-medium mb-3">Paling Fleksibel</p>
-            <p class="text-white/60 text-sm mb-6">Kirim konsep atau AI image. Kami wujudkan mockup production-ready 1-2 hari.</p>
-            <ul class="space-y-2 text-sm text-white/70 mb-6">
-              <li>✓ Desain 100% unik</li>
-              <li>✓ Free revisi</li>
-              <li>✓ Support AI concept</li>
-            </ul>
-            <a href="https://wa.me/6281234567890" target="_blank" class="text-sm font-semibold text-brand-400">Konsultasi Desain →</a>
-          </div>
-          <div class="bg-dark-800/80 border border-white/5 hover:border-brand-500/30 rounded-2xl p-7 transition hover:-translate-y-1">
-            <div class="text-5xl font-display font-bold text-white/5 mb-2">03</div>
-            <h3 class="font-display text-xl font-bold mb-1">Kirim File Sendiri</h3>
-            <p class="text-sm text-brand-400 font-medium mb-3">Punya Desain Jadi</p>
-            <p class="text-white/60 text-sm mb-6">Sudah punya file AI/PSD/PDF? Langsung kirim, kami cek & proses.</p>
-            <ul class="space-y-2 text-sm text-white/70 mb-6">
-              <li>✓ Support AI/PSD</li>
-              <li>✓ Cek kelayakan gratis</li>
-              <li>✓ Produksi langsung</li>
-            </ul>
-            <a href="https://wa.me/6281234567890" target="_blank" class="text-sm font-semibold text-brand-400">Kirim File →</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CATEGORIES (UNO style) -->
-    <section id="kategori" class="py-20 md:py-28">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14 reveal">
-          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Kategori Jersey</h2>
-          <p class="text-white/60 max-w-2xl mx-auto">Pilih jenis jersey sesuai olahraga atau kebutuhan tim kamu.</p>
-        </div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat) => (
-            <div class="group bg-dark-800/50 border border-white/5 hover:border-brand-500/30 rounded-2xl p-6 transition hover:-translate-y-1">
-              <div class="aspect-[16/10] rounded-xl bg-gradient-to-br from-dark-700 to-dark-800 mb-5 flex items-center justify-center border border-white/5">
-                <span class="text-white/20 text-sm">Foto Produk</span>
-              </div>
-              <h3 class="font-display text-lg font-bold mb-1">{cat.name}</h3>
-              <p class="text-brand-400 font-semibold text-sm mb-3">Mulai dari {cat.price}</p>
-              <p class="text-white/55 text-sm mb-4">{cat.desc}</p>
-              <ul class="space-y-1.5 mb-5">
-                {cat.features.map((f) => (
-                  <li class="text-xs text-white/50 flex items-center gap-1.5">
-                    <span class="w-1 h-1 rounded-full bg-brand-400"></span>{f}
-                  </li>
-                ))}
-              </ul>
-              <a href="https://wa.me/6281234567890" target="_blank" class="text-sm font-semibold text-white group-hover:text-brand-400 transition">
-                Order Sekarang →
-              </a>
+        <!-- HOW IT WORKS -->
+        <section class="py-20 md:py-28 bg-dark-900/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-14 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                        Cara Order Mudah
+                    </h2>
+                </div>
+                <div class="grid md:grid-cols-4 gap-8">
+                    {steps.map((item) => (
+                        <div class="text-center">
+                            <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center font-display font-bold text-brand-400">
+                                {item.step}
+                            </div>
+                            <h3 class="font-display font-bold text-lg mb-2">
+                                {item.title}
+                            </h3>
+                            <p class="text-sm text-white/55">{item.desc}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <!-- PORTFOLIO -->
-    <section id="portfolio" class="py-20 md:py-28 bg-dark-900/50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-          <div>
-            <h2 class="font-display text-3xl md:text-4xl font-bold mb-3">Portfolio Real Work</h2>
-            <p class="text-white/60 max-w-xl">Jersey yang sudah kami produksi untuk ratusan tim.</p>
-          </div>
-          <a href="https://instagram.com/" target="_blank" class="text-sm font-medium text-brand-400 hover:text-brand-300">Lihat di Instagram →</a>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div class="aspect-square rounded-xl bg-dark-800 border border-white/5 flex items-center justify-center">
-              <p class="text-xs text-white/30">Portfolio {i + 1}</p>
+        <!-- FAQ -->
+        <section id="faq" class="py-20 md:py-28">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 reveal">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                        Pertanyaan Umum
+                    </h2>
+                </div>
+                <div class="space-y-4">
+                    {faqs.map((item) => (
+                        <details class="group bg-dark-800/50 border border-white/5 rounded-xl overflow-hidden">
+                            <summary class="flex items-center justify-between cursor-pointer p-5 font-medium list-none">
+                                <span>{item.q}</span>
+                                <span class="text-white/40 group-open:rotate-180 transition">
+                                    ▼
+                                </span>
+                            </summary>
+                            <div class="px-5 pb-5 text-sm text-white/60">
+                                {item.a}
+                            </div>
+                        </details>
+                    ))}
+                </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
+        </section>
 
-    <!-- WHY US -->
-    <section id="kenapa" class="py-20 md:py-28">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14 reveal">
-          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Kenapa Pilih Kami?</h2>
-        </div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {benefits.map((item) => (
-            <div class="bg-dark-800/40 border border-white/5 rounded-2xl p-6 text-center hover:border-brand-500/20 transition">
-              <div class="text-3xl mb-4">{item.icon}</div>
-              <h3 class="font-display font-bold text-lg mb-2">{item.title}</h3>
-              <p class="text-sm text-white/55">{item.desc}</p>
+        <!-- FINAL CTA -->
+        <section class="py-20 md:py-28">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="bg-gradient-to-br from-brand-600/20 to-brand-900/20 border border-brand-500/20 rounded-3xl p-10 md:p-14">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+                        Siap Bikin Jersey Tim-mu?
+                    </h2>
+                    <p class="text-white/70 max-w-xl mx-auto mb-8">
+                        Konsultasi gratis, desain gratis, proses transparan.
+                    </p>
+                    <a
+                        href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20mulai%20custom%20jersey"
+                        target="_blank"
+                        class="inline-flex items-center gap-3 bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-4 rounded-full transition shadow-xl shadow-brand-500/30 text-lg"
+                    >
+                        Chat WhatsApp Sekarang
+                    </a>
+                </div>
             </div>
-          ))}
-        </div>
-        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div><p class="font-display text-3xl md:text-4xl font-bold text-brand-400">2.600+</p><p class="text-sm text-white/50 mt-1">Tim Terlayani</p></div>
-          <div><p class="font-display text-3xl md:text-4xl font-bold text-brand-400">35.000+</p><p class="text-sm text-white/50 mt-1">Jersey Diproduksi</p></div>
-          <div><p class="font-display text-3xl md:text-4xl font-bold text-brand-400">1-7</p><p class="text-sm text-white/50 mt-1">Hari Kerja</p></div>
-          <div><p class="font-display text-3xl md:text-4xl font-bold text-brand-400">4.9</p><p class="text-sm text-white/50 mt-1">Rating</p></div>
-        </div>
-      </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- HOW IT WORKS -->
-    <section class="py-20 md:py-28 bg-dark-900/50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-14 reveal">
-          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Cara Order Mudah</h2>
-        </div>
-        <div class="grid md:grid-cols-4 gap-8">
-          {steps.map((item) => (
-            <div class="text-center">
-              <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center font-display font-bold text-brand-400">{item.step}</div>
-              <h3 class="font-display font-bold text-lg mb-2">{item.title}</h3>
-              <p class="text-sm text-white/55">{item.desc}</p>
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-2">
+                    <img
+                        src="/logo.png"
+                        alt="Surly Apparel logo"
+                        width="36"
+                        height="36"
+                        class="w-9 h-9 object-contain"
+                    />
+                    <span class="font-display font-bold">Surly Apparel</span>
+                </div>
+                <p class="text-sm text-white/40">
+                    © 2026 Surly Apparel. All rights reserved.
+                </p>
+                <div class="flex items-center gap-4 text-sm text-white/40">
+                    <a href="#" class="hover:text-white">
+                        Instagram
+                    </a>
+                    <a href="#" class="hover:text-white">
+                        TikTok
+                    </a>
+                    <a href="#" class="hover:text-white">
+                        Shopee
+                    </a>
+                </div>
             </div>
-          ))}
         </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="py-20 md:py-28">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12 reveal">
-          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Pertanyaan Umum</h2>
-        </div>
-        <div class="space-y-4">
-          {faqs.map((item) => (
-            <details class="group bg-dark-800/50 border border-white/5 rounded-xl overflow-hidden">
-              <summary class="flex items-center justify-between cursor-pointer p-5 font-medium list-none">
-                <span>{item.q}</span>
-                <span class="text-white/40 group-open:rotate-180 transition">▼</span>
-              </summary>
-              <div class="px-5 pb-5 text-sm text-white/60">{item.a}</div>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- FINAL CTA -->
-    <section class="py-20 md:py-28">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="bg-gradient-to-br from-brand-600/20 to-brand-900/20 border border-brand-500/20 rounded-3xl p-10 md:p-14">
-          <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Siap Bikin Jersey Tim-mu?</h2>
-          <p class="text-white/70 max-w-xl mx-auto mb-8">Konsultasi gratis, desain gratis, proses transparan.</p>
-          <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20mulai%20custom%20jersey" target="_blank" class="inline-flex items-center gap-3 bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-4 rounded-full transition shadow-xl shadow-brand-500/30 text-lg">
-            Chat WhatsApp Sekarang
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-white/5 py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center font-display font-bold text-sm">CJ</div>
-          <span class="font-display font-bold">CustomJersey</span>
-        </div>
-        <p class="text-sm text-white/40">© 2026 CustomJersey. All rights reserved.</p>
-        <div class="flex items-center gap-4 text-sm text-white/40">
-          <a href="#" class="hover:text-white">Instagram</a>
-          <a href="#" class="hover:text-white">TikTok</a>
-          <a href="#" class="hover:text-white">Shopee</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+    </footer>
 </Layout>

@@ -1,0 +1,52 @@
+---
+import Layout from "../layouts/Layout.astro";
+import DesignEditor from "../components/DesignEditor.astro";
+---
+
+<Layout
+    title="Design Editor 3D | Surly Apparel"
+    description="Pilih desain, atur warna, garis, dan logo jersey custom secara interaktif. Preview 3D lalu export PNG."
+>
+    <header
+        class="relative z-50 h-[4.5rem] bg-dark-950/90 backdrop-blur-md border-b border-white/5"
+    >
+        <div class="h-full max-w-none px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-full">
+                <a href="/" class="flex items-center gap-2">
+                    <img
+                        src="/logo.png"
+                        alt="Surly Apparel logo"
+                        width="40"
+                        height="40"
+                        class="w-10 h-10 object-contain"
+                    />
+                    <span
+                        class="font-display font-bold text-xl tracking-tight hidden sm:block whitespace-nowrap"
+                    >
+                        Surly Apparel
+                    </span>
+                </a>
+                <nav class="flex items-center gap-3">
+                    <a
+                        href="/"
+                        class="text-sm font-medium text-white/70 hover:text-white transition"
+                    >
+                        ← Beranda
+                    </a>
+                    <a
+                        href="https://wa.me/6281394044067?text=Halo%2C%20saya%20ingin%20custom%20jersey"
+                        target="_blank"
+                        class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 text-sm font-semibold px-4 py-2.5 rounded-full transition shadow-lg shadow-brand-500/20 btn-press whitespace-nowrap"
+                    >
+                        Konsultasi Gratis
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <DesignEditor fullPage />
+    </main>
+
+</Layout>

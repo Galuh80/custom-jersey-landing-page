@@ -1,35 +1,138 @@
 ---
-// Design Editor - Realistic 3D Jersey with GLTF model (shirt_baked.glb)
-// Fallback to improved procedural mesh if GLTF fails to load
+import { designPresets } from "../data/designs";
+
+// Realistic 3D jersey editor with GLTF model (shirt_baked.glb).
+// Falls back to a procedural mesh if the GLTF fails to load.
+
+interface Props {
+    badge?: string;
+    heading?: string;
+    subheading?: string;
+    fullPage?: boolean;
+}
+
+const {
+    badge = "Design Editor · 3D",
+    heading = "Buat Desain Jersey-mu",
+    subheading = "Pilih desain, atur warna, garis, dan logo. Preview 3D realistis. Export ke PNG lalu kirim ke kami untuk produksi.",
+    fullPage = false,
+} = Astro.props;
 ---
 
 <section
     id="design-editor"
-    class="py-16 md:py-24 bg-dark-900/60 border-y border-white/5"
+    data-full-page={fullPage ? "true" : "false"}
+    class:list={[
+        "bg-dark-900/60 border-y border-white/5",
+        fullPage
+            ? "editor-full-page h-[calc(100dvh-4.5rem)] min-h-[620px] overflow-hidden"
+            : "py-16 md:py-24",
+    ]}
 >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-10 md:mb-14 reveal">
+    <div
+        class:list={[
+            "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            fullPage ? "editor-full-page-inner h-full max-w-none px-0" : "",
+        ]}
+    >
+        <div class:list={["text-center mb-10 md:mb-14 reveal", fullPage ? "hidden" : ""]}>
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-sm font-medium mb-4">
-                Design Editor · 3D
+                {badge}
             </div>
             <h2 class="font-display text-3xl md:text-4xl font-bold mb-3">
-                Buat Desain Jersey-mu
+                {heading}
             </h2>
             <p class="text-white/60 max-w-2xl mx-auto text-sm md:text-base">
-                Atur warna, garis, dan logo. Preview 3D realistis. Export ke PNG
-                lalu kirim ke kami untuk produksi.
+                {subheading}
             </p>
+            {!fullPage && (
+                <div class="mt-4">
+                    <a
+                        href="/editor"
+                        class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-400 hover:text-brand-300 transition"
+                    >
+                        Buka editor halaman penuh →
+                    </a>
+                </div>
+            )}
         </div>
 
-        <div class="grid lg:grid-cols-5 gap-6 lg:gap-8">
+        <div
+            class:list={[
+                "grid gap-6 lg:gap-8",
+                fullPage
+                    ? "editor-full-page-grid h-full min-h-0"
+                    : "lg:grid-cols-5",
+            ]}
+        >
             <!-- Controls -->
-            <div class="lg:col-span-2 order-2 lg:order-1 space-y-4 editor-panel reveal min-w-0">
+            <div
+                class:list={[
+                    "space-y-4 editor-panel reveal min-w-0",
+                    fullPage
+                        ? "editor-full-page-controls h-full min-h-0 overflow-y-auto border-l border-white/10 bg-dark-950 px-4 py-5 sm:px-6"
+                        : "lg:col-span-2 order-2 lg:order-1",
+                ]}
+            >
                 <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
-                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
-                        Preview 3D
-                    </h3>
-                    <p class="text-xs text-white/35">
-                        Drag untuk memutar model jersey 3D secara interaktif.
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-display font-semibold text-sm text-white/80">
+                            Pilih Desain
+                        </h3>
+                        <span
+                            id="design-count"
+                            class="text-xs text-white/30"
+                        ></span>
+                    </div>
+                    <div
+                        id="zone-selector"
+                        class="flex flex-wrap gap-1.5 mb-3"
+                    >
+                        <button
+                            type="button"
+                            data-zone="all"
+                            class="px-2.5 py-1 rounded-lg text-xs font-medium transition bg-brand-500 text-dark-950"
+                        >
+                            Semua
+                        </button>
+                        <button
+                            type="button"
+                            data-zone="front"
+                            class="px-2.5 py-1 rounded-lg text-xs font-medium transition bg-white/5 text-white/60 hover:bg-white/10"
+                        >
+                            Depan
+                        </button>
+                        <button
+                            type="button"
+                            data-zone="back"
+                            class="px-2.5 py-1 rounded-lg text-xs font-medium transition bg-white/5 text-white/60 hover:bg-white/10"
+                        >
+                            Belakang
+                        </button>
+                        <button
+                            type="button"
+                            data-zone="sleeveLeft"
+                            class="px-2.5 py-1 rounded-lg text-xs font-medium transition bg-white/5 text-white/60 hover:bg-white/10"
+                        >
+                            Lengan L
+                        </button>
+                        <button
+                            type="button"
+                            data-zone="sleeveRight"
+                            class="px-2.5 py-1 rounded-lg text-xs font-medium transition bg-white/5 text-white/60 hover:bg-white/10"
+                        >
+                            Lengan R
+                        </button>
+                    </div>
+                    <div
+                        id="design-grid"
+                        class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 gap-2"
+                    >
+                    </div>
+                    <p class="text-xs text-white/35 mt-3 leading-relaxed">
+                        Pilih zona, lalu terapkan desain/warna hanya ke bagian
+                        itu. <span class="text-white/60">Semua</span> mengubah
+                        seluruh jersey.
                     </p>
                 </div>
 
@@ -198,116 +301,161 @@
                     </div>
                 </div>
 
-                <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
-                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
-                        Garis & Aksen
-                    </h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="text-sm text-white/60 block mb-2">
-                                Gaya Pola
-                            </label>
-                            <div class="flex gap-2">
-                                <button
-                                    type="button"
-                                    id="btn-pattern-vertical"
-                                    class="flex-1 py-2 rounded-xl text-xs font-medium bg-brand-500 text-dark-950 transition"
-                                >
-                                    Vertikal
-                                </button>
-                                <button
-                                    type="button"
-                                    id="btn-pattern-horizontal"
-                                    class="flex-1 py-2 rounded-xl text-xs font-medium bg-white/5 text-white/70 hover:bg-white/10 transition"
-                                >
-                                    Horizontal (Tackle)
-                                </button>
+                <div class="space-y-4">
+                    <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5 flex flex-col">
+                        <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
+                            Garis & Aksen
+                        </h3>
+                        <div class="space-y-3 flex-1">
+                            <div>
+                                <label class="text-sm text-white/60 block mb-2">
+                                    Gaya Pola
+                                </label>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button
+                                        type="button"
+                                        id="btn-pattern-vertical"
+                                        class="w-full py-2 rounded-xl text-xs font-medium bg-brand-500 text-dark-950 transition"
+                                    >
+                                        Vertikal
+                                    </button>
+                                    <button
+                                        type="button"
+                                        id="btn-pattern-horizontal"
+                                        class="w-full py-2 rounded-xl text-xs font-medium bg-white/5 text-white/70 hover:bg-white/10 transition"
+                                    >
+                                        Horizontal (Tackle)
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="text-sm text-white/60">
-                                Warna Garis
-                            </label>
-                            <input
-                                type="color"
-                                id="color-stripe"
-                                value="#ffffff"
-                            />
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm text-white/60 mb-1">
-                                <span>Jumlah Garis</span>
-                                <span id="stripe-count-label">2</span>
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm text-white/60">
+                                    Warna Garis
+                                </label>
+                                <input
+                                    type="color"
+                                    id="color-stripe"
+                                    value="#ffffff"
+                                />
                             </div>
-                            <input
-                                type="range"
-                                id="stripe-count"
-                                min="0"
-                                max="6"
-                                value="2"
-                                class="editor-slider w-full"
-                            />
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm text-white/60 mb-1">
-                                <span>Lebar Garis</span>
-                                <span id="stripe-width-label">8%</span>
+                            <div>
+                                <div class="flex justify-between text-sm text-white/60 mb-1">
+                                    <span>Jumlah Garis</span>
+                                    <span id="stripe-count-label">2</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    id="stripe-count"
+                                    min="0"
+                                    max="6"
+                                    value="2"
+                                    class="editor-slider w-full"
+                                />
                             </div>
-                            <input
-                                type="range"
-                                id="stripe-width"
-                                min="2"
-                                max="20"
-                                value="8"
-                                class="editor-slider w-full"
-                            />
+                            <div>
+                                <div class="flex justify-between text-sm text-white/60 mb-1">
+                                    <span>Lebar Garis</span>
+                                    <span id="stripe-width-label">8%</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    id="stripe-width"
+                                    min="2"
+                                    max="20"
+                                    value="8"
+                                    class="editor-slider w-full"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5">
-                    <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
-                        Logo / Crest
-                    </h3>
-                    <div class="space-y-3">
-                        <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-white/15 rounded-xl cursor-pointer hover:border-brand-500/40 transition">
-                            <span class="text-sm text-white/50" id="logo-label">
-                                Upload Logo (PNG transparan)
-                            </span>
-                            <input
-                                type="file"
-                                id="logo-upload"
-                                accept="image/png,image/jpeg,image/webp"
-                                class="hidden"
-                            />
-                        </label>
-                        <div>
-                            <div class="flex justify-between text-sm text-white/60 mb-1">
-                                <span>Ukuran Logo</span>
-                                <span id="logo-size-label">18%</span>
+                    <div class="bg-dark-800/70 border border-white/5 rounded-2xl p-5 flex flex-col">
+                        <h3 class="font-display font-semibold text-sm mb-3 text-white/80">
+                            Logo & Teks
+                        </h3>
+                        <div class="space-y-3 flex-1">
+                            <label class="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-white/15 rounded-xl cursor-pointer hover:border-brand-500/40 transition">
+                                <span class="text-sm text-white/50" id="logo-label">
+                                    Upload Logo (PNG transparan)
+                                </span>
+                                <input
+                                    type="file"
+                                    id="logo-upload"
+                                    accept="image/png,image/jpeg,image/webp"
+                                    class="hidden"
+                                />
+                            </label>
+                            <div>
+                                <div class="flex justify-between text-sm text-white/60 mb-1">
+                                    <span>Ukuran Logo</span>
+                                    <span id="logo-size-label">18%</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    id="logo-size"
+                                    min="8"
+                                    max="40"
+                                    value="18"
+                                    class="editor-slider w-full"
+                                />
                             </div>
-                            <input
-                                type="range"
-                                id="logo-size"
-                                min="8"
-                                max="40"
-                                value="18"
-                                class="editor-slider w-full"
-                            />
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm text-white/60 mb-1">
-                                <span>Posisi Vertikal</span>
-                                <span id="logo-y-label">32%</span>
+                            <div>
+                                <div class="flex justify-between text-sm text-white/60 mb-1">
+                                    <span>Rotasi Logo</span>
+                                    <span id="logo-rotation-label">0°</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    id="logo-rotation"
+                                    min="0"
+                                    max="360"
+                                    value="0"
+                                    class="editor-slider w-full"
+                                />
                             </div>
-                            <input
-                                type="range"
-                                id="logo-y"
-                                min="12"
-                                max="55"
-                                value="32"
-                                class="editor-slider w-full"
-                            />
+                            <label class="flex items-center justify-between gap-3 cursor-pointer text-sm text-white/60">
+                                <span>Mirror Logo</span>
+                                <input
+                                    type="checkbox"
+                                    id="logo-mirror"
+                                    class="accent-yellow-400 h-4 w-4"
+                                />
+                            </label>
+                            <div>
+                                <label class="text-xs text-white/40 block mb-1">
+                                    Teks / Nama / Nomor
+                                </label>
+                                <input
+                                    id="text-input"
+                                    type="text"
+                                    placeholder="Contoh: SURYLES 10"
+                                    maxlength="24"
+                                    class="w-full bg-dark-900/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-brand-500/50"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm text-white/60">
+                                    Warna Teks
+                                </label>
+                                <input
+                                    type="color"
+                                    id="text-color"
+                                    value="#ffffff"
+                                />
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm text-white/60 mb-1">
+                                    <span>Ukuran Teks</span>
+                                    <span id="text-size-label">12%</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    id="text-size"
+                                    min="4"
+                                    max="30"
+                                    value="12"
+                                    class="editor-slider w-full"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -334,15 +482,25 @@
                 </p>
             </div>
 
-            <!-- 3D Preview -->
-            <div class="lg:col-span-3 order-1 lg:order-2 reveal min-w-0">
+            <!-- 3D preview -->
+            <div
+                class:list={[
+                    "reveal min-w-0",
+                    fullPage
+                        ? "editor-full-page-preview h-full min-h-0 p-3 sm:p-5 lg:p-8"
+                        : "lg:col-span-3 order-1 lg:order-2",
+                ]}
+            >
                 <div
                     class="relative bg-gradient-to-b from-dark-800/80 to-dark-900/80 border border-white/5 rounded-2xl overflow-hidden"
-                    style="min-height: 400px;"
+                    style={fullPage ? "height: 100%; min-height: 0;" : "min-height: 400px;"}
                 >
                     <div
                         id="design-canvas-container"
-                        class="w-full h-[400px] sm:h-[460px] md:h-[540px] relative"
+                        class:list={[
+                            "w-full h-[400px] sm:h-[460px] md:h-[540px] relative",
+                            fullPage ? "editor-full-page-canvas h-full" : "",
+                        ]}
                     >
                         <div
                             id="canvas-placeholder"
@@ -356,8 +514,11 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="absolute bottom-3 left-0 right-0 text-center pointer-events-none">
-                        <p class="text-xs text-white/30 bg-dark-950/50 inline-block px-3 py-1 rounded-full">
+                        <p
+                            class="text-xs text-white/30 bg-dark-950/50 inline-block px-3 py-1 rounded-full"
+                        >
                             Drag untuk putar · Scroll untuk zoom
                         </p>
                     </div>
@@ -370,6 +531,13 @@
         </div>
     </div>
 </section>
+
+<script
+    is:inline
+    type="application/json"
+    id="design-presets"
+    set:html={JSON.stringify(designPresets)}
+></script>
 
 <!-- Three.js r128 + GLTFLoader -->
 <script
@@ -408,15 +576,57 @@
             var statusEl = document.getElementById("model-status");
             if (!container) return;
 
-            var baseColor = "#fef013";
-            var stripeColor = "#ffffff";
-            var patternMode = "vertical"; // "vertical" | "horizontal" (Tackle-style hoops)
-            var stripeCount = 2;
-            var stripeWidth = 8;
-            var logoImg = null;
-            var logoSize = 18;
-            var logoY = 32;
+            var DESIGNS = [];
+            try {
+                var presetsEl = document.getElementById("design-presets");
+                if (presetsEl) DESIGNS = JSON.parse(presetsEl.textContent) || [];
+            } catch (e) {
+                DESIGNS = [];
+            }
+
             var brightness = 100;
+            var zoneMasks = null;
+            var ZONE_KEYS = ["front", "back", "sleeveLeft", "sleeveRight"];
+
+            // Logo & text overlay (drawn straight onto the texture)
+            var logoImg = null;
+            var logoDataUrl = null;
+            var logoSize = 18;
+            var logoX = 256;
+            var logoY = 560;
+            var logoRotation = 0;
+            var logoMirror = false;
+            var textValue = "";
+            var textColor = "#ffffff";
+            var textSize = 12;
+
+            function makeZoneState() {
+                return {
+                    pattern: "vertical-stripes",
+                    colors: ["#fef013", "#ffffff"],
+                    stripeCount: 2,
+                    stripeWidth: 8,
+                };
+            }
+
+            // Per-zone design state. "all" edits every zone at once; picking a
+            // specific zone lets front/back/sleeves diverge.
+            var zones = {
+                front: makeZoneState(),
+                back: makeZoneState(),
+                sleeveLeft: makeZoneState(),
+                sleeveRight: makeZoneState(),
+            };
+            var activeZone = "all";
+            var activeDesignId = null;
+
+            function targetZoneKeys() {
+                return activeZone === "all" ? ZONE_KEYS : [activeZone];
+            }
+
+            function primaryTargetZone() {
+                return zones[targetZoneKeys()[0]];
+            }
 
             var width = container.clientWidth;
             var height = container.clientHeight;
@@ -430,7 +640,10 @@
                 0.1,
                 100,
             );
-            camera.position.set(0, 0.15, 2.4);
+            var isFullPageEditor =
+                document.getElementById("design-editor")?.dataset.fullPage ===
+                "true";
+            camera.position.set(0, 0.15, isFullPageEditor ? 4.2 : 2.4);
 
             var renderer = new THREE.WebGLRenderer({
                 antialias: true,
@@ -468,6 +681,184 @@
             designTexture.needsUpdate = true;
             if (designTexture.encoding !== undefined)
                 designTexture.encoding = THREE.sRGBEncoding;
+
+            // Pattern canvas: the procedurally generated background layer
+            var patternCanvas = document.createElement("canvas");
+            patternCanvas.width = 1024;
+            patternCanvas.height = 1024;
+            var patternCtx = patternCanvas.getContext("2d");
+
+            var frontMaskCanvas = document.createElement("canvas");
+            frontMaskCanvas.width = 1024;
+            frontMaskCanvas.height = 1024;
+            var frontMaskCtx = frontMaskCanvas.getContext("2d");
+            var overlayCanvas = document.createElement("canvas");
+            overlayCanvas.width = 1024;
+            overlayCanvas.height = 1024;
+            var overlayCtx = overlayCanvas.getContext("2d");
+
+            // Reusable staging canvas for per-zone masked compositing
+            var stageCanvas = document.createElement("canvas");
+            stageCanvas.width = 1024;
+            stageCanvas.height = 1024;
+            var stageCtx = stageCanvas.getContext("2d");
+
+            // Classify a vertex/triangle centroid into a garment zone.
+            function classifyVertex(x, y, z) {
+                if (x < -0.17) return "sleeveLeft";
+                if (x > 0.17) return "sleeveRight";
+                if (z > 0.02) return "front";
+                if (z < -0.02) return "back";
+                return null;
+            }
+
+            // Parse shirt_baked.glb geometry and rasterize a white UV mask per
+            // zone (front/back/sleeves). This drives accurate per-area designs.
+            function buildZoneMasks(arrayBuffer) {
+                try {
+                    var view = new DataView(arrayBuffer);
+                    var magic = new Uint8Array(arrayBuffer, 0, 4);
+                    if (magic[0] !== 0x67 || magic[1] !== 0x6c) return null;
+                    var total = view.getUint32(8, true);
+                    var off = 12;
+                    var json = null;
+                    var binOffset = 0;
+                    while (off < total) {
+                        var clen = view.getUint32(off, true);
+                        var ctype = view.getUint32(off + 4, true);
+                        if (ctype === 0x4e4f534a) {
+                            json = JSON.parse(
+                                new TextDecoder().decode(
+                                    new Uint8Array(
+                                        arrayBuffer,
+                                        off + 8,
+                                        clen,
+                                    ),
+                                ),
+                            );
+                        } else if (ctype === 0x004e4942) {
+                            binOffset = off + 8;
+                        }
+                        off += 8 + clen;
+                    }
+                    if (!json) return null;
+                    var g = json;
+                    var prim = g.meshes[0].primitives[0];
+
+                    function readAccessor(ai) {
+                        var a = g.accessors[ai];
+                        var bv = g.bufferViews[a.bufferView];
+                        var start =
+                            binOffset +
+                            (bv.byteOffset || 0) +
+                            (a.byteOffset || 0);
+                        var compBytes = {
+                            5120: 1,
+                            5121: 1,
+                            5122: 2,
+                            5123: 2,
+                            5125: 4,
+                            5126: 4,
+                        }[a.componentType];
+                        var nComp = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 }[
+                            a.type
+                        ];
+                        var stride = bv.byteStride || compBytes * nComp;
+                        var res = [];
+                        for (var i = 0; i < a.count; i++) {
+                            var rec = [];
+                            for (var c = 0; c < nComp; c++) {
+                                var p = start + i * stride + c * compBytes;
+                                if (a.componentType === 5126)
+                                    rec.push(view.getFloat32(p, true));
+                                else if (a.componentType === 5125)
+                                    rec.push(view.getUint32(p, true));
+                                else if (a.componentType === 5123)
+                                    rec.push(view.getUint16(p, true));
+                                else rec.push(view.getUint8(p));
+                            }
+                            res.push(rec);
+                        }
+                        return res;
+                    }
+
+                    var pos = readAccessor(prim.attributes.POSITION);
+                    var uvs = readAccessor(prim.attributes.TEXCOORD_0);
+                    var idx = readAccessor(prim.indices);
+
+                    var masks = {};
+                    var mctx = {};
+                    ZONE_KEYS.forEach(function (k) {
+                        var cv = document.createElement("canvas");
+                        cv.width = 1024;
+                        cv.height = 1024;
+                        var cx = cv.getContext("2d");
+                        cx.fillStyle = "#ffffff";
+                        cx.strokeStyle = "#ffffff";
+                        cx.lineWidth = 2;
+                        masks[k] = cv;
+                        mctx[k] = cx;
+                    });
+
+                    for (var t = 0; t < idx.length; t += 3) {
+                        var ia = idx[t][0];
+                        var ib = idx[t + 1][0];
+                        var ic = idx[t + 2][0];
+                        var pa = pos[ia];
+                        var pb = pos[ib];
+                        var pc = pos[ic];
+                        var zk = classifyVertex(
+                            (pa[0] + pb[0] + pc[0]) / 3,
+                            (pa[1] + pb[1] + pc[1]) / 3,
+                            (pa[2] + pb[2] + pc[2]) / 3,
+                        );
+                        if (!zk) continue;
+                        var ctx2 = mctx[zk];
+                        var ua = uvs[ia];
+                        var ub = uvs[ib];
+                        var uc = uvs[ic];
+                        ctx2.beginPath();
+                        ctx2.moveTo(ua[0] * 1024, (1 - ua[1]) * 1024);
+                        ctx2.lineTo(ub[0] * 1024, (1 - ub[1]) * 1024);
+                        ctx2.lineTo(uc[0] * 1024, (1 - uc[1]) * 1024);
+                        ctx2.closePath();
+                        ctx2.fill();
+                        ctx2.stroke();
+                        if (zk === "front") {
+                            frontMaskCtx.beginPath();
+                            frontMaskCtx.moveTo(
+                                ua[0] * 1024,
+                                (1 - ua[1]) * 1024,
+                            );
+                            frontMaskCtx.lineTo(
+                                ub[0] * 1024,
+                                (1 - ub[1]) * 1024,
+                            );
+                            frontMaskCtx.lineTo(
+                                uc[0] * 1024,
+                                (1 - uc[1]) * 1024,
+                            );
+                            frontMaskCtx.closePath();
+                            frontMaskCtx.fill();
+                            frontMaskCtx.stroke();
+                        }
+                    }
+                    return masks;
+                } catch (e) {
+                    console.warn("Zone mask build failed", e);
+                    return null;
+                }
+            }
+
+            fetch("/models/shirt_baked.glb")
+                .then(function (r) {
+                    return r.arrayBuffer();
+                })
+                .then(function (ab) {
+                    zoneMasks = buildZoneMasks(ab);
+                    if (zoneMasks) drawTexture();
+                })
+                .catch(function () {});
 
             var meshGroup = new THREE.Group();
             scene.add(meshGroup);
@@ -616,52 +1007,232 @@
                 );
             }
 
-            function drawTexture() {
-                var w = texCanvas.width;
-                var h = texCanvas.height;
-                texCtx.clearRect(0, 0, w, h);
+            function renderPattern(ctx, w, h, d) {
+                var colors = (d && d.colors) || ["#ffffff", "#111827"];
+                var primary = colors[0] || "#ffffff";
+                var secondary = colors[1] || primary;
+                var p = (d && d.pattern) || "solid";
+                var count =
+                    d && d.stripeCount != null ? d.stripeCount : 3;
+                var widthPct =
+                    d && d.stripeWidth != null ? d.stripeWidth : 10;
 
-                var r = parseInt(baseColor.slice(1, 3), 16);
-                var g = parseInt(baseColor.slice(3, 5), 16);
-                var b = parseInt(baseColor.slice(5, 7), 16);
-                var f = brightness / 100;
-                texCtx.fillStyle =
-                    "rgb(" +
-                    Math.min(255, Math.round(r * f)) +
-                    "," +
-                    Math.min(255, Math.round(g * f)) +
-                    "," +
-                    Math.min(255, Math.round(b * f)) +
-                    ")";
-                texCtx.fillRect(0, 0, w, h);
+                ctx.clearRect(0, 0, w, h);
+                ctx.fillStyle = primary;
+                ctx.fillRect(0, 0, w, h);
 
-                if (stripeCount > 0) {
-                    texCtx.fillStyle = stripeColor;
-                    if (patternMode === "horizontal") {
-                        // "Tackle"-style rugby hoops: full-width bands
-                        // alternating base/accent color down the shirt.
-                        var bands = stripeCount * 2 + 1;
-                        var bandH = h / bands;
-                        for (var bi = 1; bi < bands; bi += 2) {
-                            texCtx.fillRect(0, bandH * bi, w, bandH);
-                        }
-                    } else {
-                        var stripeW = (stripeWidth / 100) * w;
-                        var gap = w / (stripeCount + 1);
-                        for (var i = 1; i <= stripeCount; i++) {
-                            var x = gap * i - stripeW / 2;
-                            texCtx.fillRect(x, 0, stripeW, h);
-                        }
-                    }
+                if (p === "gradient") {
+                    var grad = ctx.createLinearGradient(0, 0, 0, h);
+                    grad.addColorStop(0, primary);
+                    grad.addColorStop(1, secondary);
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, w, h);
+                    return;
                 }
 
+                ctx.fillStyle = secondary;
+
+                if (p === "vertical-stripes") {
+                    var vGap = w / (count + 1);
+                    var vBar = (widthPct / 100) * w;
+                    for (var vi = 1; vi <= count; vi++) {
+                        ctx.fillRect(vGap * vi - vBar / 2, 0, vBar, h);
+                    }
+                } else if (p === "hoops") {
+                    var bands = count * 2 + 1;
+                    var bandH = h / bands;
+                    for (var bi = 1; bi < bands; bi += 2) {
+                        ctx.fillRect(0, bandH * bi, w, bandH);
+                    }
+                } else if (p === "pinstripes") {
+                    var pn = count * 3 + 4;
+                    var pStep = w / pn;
+                    var pLine = Math.max(2, (widthPct / 100) * w * 0.3);
+                    for (var pi = 0; pi < pn; pi++) {
+                        if (pi % 2 === 0) {
+                            ctx.fillRect(pi * pStep, 0, pLine, h);
+                        }
+                    }
+                } else if (p === "diagonal") {
+                    var dBar = Math.max((widthPct / 100) * w, w * 0.08);
+                    var period = dBar * 2;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(0, 0, w, h);
+                    ctx.clip();
+                    for (var dx = -h; dx < w + h; dx += period) {
+                        ctx.beginPath();
+                        ctx.moveTo(dx, h);
+                        ctx.lineTo(dx + dBar, h);
+                        ctx.lineTo(dx + dBar + h, 0);
+                        ctx.lineTo(dx + h, 0);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                } else if (p === "sash") {
+                    ctx.save();
+                    ctx.strokeStyle = secondary;
+                    ctx.lineWidth = Math.max((widthPct / 100) * w, w * 0.1);
+                    ctx.beginPath();
+                    ctx.moveTo(-w * 0.1, h * 0.3);
+                    ctx.lineTo(w * 1.1, h * 0.7);
+                    ctx.stroke();
+                    ctx.restore();
+                } else if (p === "halves") {
+                    ctx.fillRect(w / 2, 0, w / 2, h);
+                } else if (p === "yoke") {
+                    ctx.fillRect(0, 0, w, h * 0.28);
+                } else if (p === "checker") {
+                    var cn = count + 2;
+                    var cell = w / cn;
+                    for (var cy = 0; cy < cn; cy++) {
+                        for (var cx = 0; cx < cn; cx++) {
+                            if ((cx + cy) % 2 === 0) {
+                                ctx.fillRect(cx * cell, cy * cell, cell, cell);
+                            }
+                        }
+                    }
+                } else if (p === "side-panels") {
+                    ctx.fillRect(0, 0, w * 0.14, h);
+                    ctx.fillRect(w * 0.86, 0, w * 0.14, h);
+                } else if (p === "center-block") {
+                    ctx.fillRect(w * 0.26, h * 0.16, w * 0.48, h * 0.52);
+                } else if (p === "v-sash") {
+                    ctx.save();
+                    ctx.lineWidth = Math.max((widthPct / 100) * w, w * 0.12);
+                    ctx.lineCap = "butt";
+                    ctx.beginPath();
+                    ctx.moveTo(w * 0.08, 0);
+                    ctx.lineTo(w * 0.5, h * 0.43);
+                    ctx.lineTo(w * 0.92, 0);
+                    ctx.strokeStyle = secondary;
+                    ctx.stroke();
+                    ctx.restore();
+                } else if (p === "yoke-stripes") {
+                    var yokeH = h * 0.34;
+                    ctx.fillRect(0, 0, w, yokeH);
+                    ctx.fillStyle = primary;
+                    for (var ys = 1; ys <= count; ys++) {
+                        ctx.fillRect(0, (yokeH / (count + 1)) * ys, w, 2);
+                    }
+                } else if (p === "double-sash") {
+                    ctx.save();
+                    ctx.strokeStyle = secondary;
+                    ctx.lineWidth = Math.max((widthPct / 100) * w, w * 0.08);
+                    ctx.beginPath();
+                    ctx.moveTo(w * 0.04, 0);
+                    ctx.lineTo(w * 0.48, h * 0.56);
+                    ctx.moveTo(w * 0.28, 0);
+                    ctx.lineTo(w * 0.72, h * 0.56);
+                    ctx.stroke();
+                    ctx.restore();
+                } else if (p === "shoulder-panels") {
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(w * 0.28, 0);
+                    ctx.lineTo(w * 0.5, h * 0.18);
+                    ctx.lineTo(w * 0.72, 0);
+                    ctx.lineTo(w, 0);
+                    ctx.lineTo(w, h * 0.28);
+                    ctx.lineTo(w * 0.67, h * 0.2);
+                    ctx.lineTo(w * 0.5, h * 0.3);
+                    ctx.lineTo(w * 0.33, h * 0.2);
+                    ctx.lineTo(0, h * 0.28);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (p === "chest-band") {
+                    ctx.fillRect(0, h * 0.22, w, h * 0.28);
+                    ctx.fillStyle = primary;
+                    ctx.fillRect(0, h * 0.22, w, h * 0.025);
+                    ctx.fillRect(0, h * 0.475, w, h * 0.025);
+                } else if (p === "gradient-hem") {
+                    var hem = ctx.createLinearGradient(0, h * 0.5, 0, h);
+                    hem.addColorStop(0, primary);
+                    hem.addColorStop(0.5, secondary);
+                    hem.addColorStop(1, secondary);
+                    ctx.fillStyle = hem;
+                    ctx.fillRect(0, h * 0.5, w, h * 0.5);
+                    ctx.fillStyle = primary;
+                    ctx.beginPath();
+                    ctx.moveTo(0, h * 0.58);
+                    for (var fx = 0; fx <= 12; fx++) {
+                        var px = (w / 12) * fx;
+                        var py = h * (fx % 2 === 0 ? 0.58 : 0.49);
+                        ctx.lineTo(px, py);
+                    }
+                    ctx.lineTo(w, h * 0.66);
+                    ctx.lineTo(0, h * 0.66);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (p === "lightning") {
+                    ctx.beginPath();
+                    ctx.moveTo(w * 0.58, 0);
+                    ctx.lineTo(w * 0.25, h * 0.48);
+                    ctx.lineTo(w * 0.47, h * 0.48);
+                    ctx.lineTo(w * 0.3, h);
+                    ctx.lineTo(w * 0.78, h * 0.39);
+                    ctx.lineTo(w * 0.55, h * 0.39);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            // Front panel centre in UV/texture space (see zone masks)
+            var FRONT_CX = 256;
+            var textY = 640;
+
+            function syncTexture() {
+                texCtx.clearRect(0, 0, 1024, 1024);
+                texCtx.drawImage(patternCanvas, 0, 0, 1024, 1024);
+
+                // Logo overlay (front chest)
                 if (logoImg) {
-                    var logoW = (logoSize / 100) * w;
+                    var logoW = (logoSize / 100) * 1024;
                     var logoH =
                         logoW * (logoImg.height / Math.max(1, logoImg.width));
-                    var lx = (w - logoW) / 2;
-                    var ly = (logoY / 100) * h - logoH / 2;
-                    texCtx.drawImage(logoImg, lx, ly, logoW, logoH);
+                    overlayCtx.clearRect(0, 0, 1024, 1024);
+                    overlayCtx.save();
+                    overlayCtx.translate(logoX, logoY);
+                    overlayCtx.rotate((logoRotation * Math.PI) / 180);
+                    overlayCtx.scale(logoMirror ? -1 : 1, 1);
+                    overlayCtx.drawImage(
+                        logoImg,
+                        -logoW / 2,
+                        -logoH / 2,
+                        logoW,
+                        logoH,
+                    );
+                    overlayCtx.restore();
+                    overlayCtx.globalCompositeOperation = "destination-in";
+                    overlayCtx.drawImage(frontMaskCanvas, 0, 0, 1024, 1024);
+                    overlayCtx.globalCompositeOperation = "source-over";
+                    texCtx.drawImage(overlayCanvas, 0, 0, 1024, 1024);
+                }
+
+                // Text overlay (name / number)
+                if (textValue) {
+                    var fs = (textSize / 100) * 1024;
+                    overlayCtx.clearRect(0, 0, 1024, 1024);
+                    overlayCtx.font =
+                        "700 " +
+                        Math.round(fs) +
+                        'px Outfit, "Inter", sans-serif';
+                    overlayCtx.textAlign = "center";
+                    overlayCtx.textBaseline = "middle";
+                    overlayCtx.lineWidth = Math.max(2, fs * 0.06);
+                    overlayCtx.strokeStyle = "rgba(0,0,0,0.45)";
+                    overlayCtx.fillStyle = textColor;
+                    overlayCtx.save();
+                    overlayCtx.translate(FRONT_CX, textY);
+                    overlayCtx.scale(1, -1);
+                    overlayCtx.strokeText(textValue, 0, 0);
+                    overlayCtx.fillText(textValue, 0, 0);
+                    overlayCtx.restore();
+                    overlayCtx.globalCompositeOperation = "destination-in";
+                    overlayCtx.drawImage(frontMaskCanvas, 0, 0, 1024, 1024);
+                    overlayCtx.globalCompositeOperation = "source-over";
+                    texCtx.drawImage(overlayCanvas, 0, 0, 1024, 1024);
                 }
 
                 designTexture.needsUpdate = true;
@@ -674,16 +1245,56 @@
                         child.material.map === designTexture
                     ) {
                         child.material.needsUpdate = true;
-                    } else if (
-                        child.isMesh &&
-                        child.material &&
-                        !child.material.colorEquals
-                    ) {
-                        // If material has map, refresh
-                        if (child.material.map)
-                            child.material.map.needsUpdate = true;
                     }
                 });
+
+            }
+
+            function patternSpec(z) {
+                return {
+                    pattern: z.pattern,
+                    colors: z.colors,
+                    stripeCount: z.stripeCount,
+                    stripeWidth: z.stripeWidth,
+                };
+            }
+
+            function drawTexture() {
+                // Fallback fill (covers seams / texels outside every zone)
+                patternCtx.fillStyle = zones.front.colors[0] || "#fef013";
+                patternCtx.fillRect(0, 0, 1024, 1024);
+
+                if (zoneMasks) {
+                    // Composite each zone's pattern through its UV mask
+                    ZONE_KEYS.forEach(function (k) {
+                        renderPattern(
+                            stageCtx,
+                            1024,
+                            1024,
+                            patternSpec(zones[k]),
+                        );
+                        stageCtx.globalCompositeOperation = "destination-in";
+                        stageCtx.drawImage(zoneMasks[k], 0, 0, 1024, 1024);
+                        stageCtx.globalCompositeOperation = "source-over";
+                        patternCtx.drawImage(stageCanvas, 0, 0, 1024, 1024);
+                    });
+                } else {
+                    // Masks not ready yet: render a single global pattern
+                    renderPattern(
+                        patternCtx,
+                        1024,
+                        1024,
+                        patternSpec(primaryTargetZone()),
+                    );
+                }
+
+                if (brightness < 100) {
+                    patternCtx.fillStyle =
+                        "rgba(0,0,0," + (1 - brightness / 100) + ")";
+                    patternCtx.fillRect(0, 0, 1024, 1024);
+                }
+
+                syncTexture();
             }
 
             // Start with GLTF for jersey
@@ -691,30 +1302,202 @@
 
             // Orbit
             var isDragging = false;
+            var dragOverlay = null;
             var prevX = 0,
                 prevY = 0;
             var rotY = 0.35,
                 rotX = 0.12;
 
+            var overlayRaycaster = new THREE.Raycaster();
+            var overlayPointer = new THREE.Vector2();
+            var textureUv = new THREE.Vector2();
+
+            function findFrontPositionAtTexture(textureX, textureY) {
+                if (!shirtMesh || !shirtMesh.geometry) return null;
+                var geometry = shirtMesh.geometry;
+                var positions = geometry.attributes.position;
+                var uvs = geometry.attributes.uv;
+                if (!positions || !uvs) return null;
+
+                var indices = geometry.index;
+                var vertexCount = indices ? indices.count : positions.count;
+                textureUv.set(textureX / 1024, 1 - textureY / 1024);
+
+                for (var ti = 0; ti < vertexCount; ti += 3) {
+                    var ia = indices ? indices.getX(ti) : ti;
+                    var ib = indices ? indices.getX(ti + 1) : ti + 1;
+                    var ic = indices ? indices.getX(ti + 2) : ti + 2;
+                    var ax = uvs.getX(ia), ay = uvs.getY(ia);
+                    var bx = uvs.getX(ib), by = uvs.getY(ib);
+                    var cx = uvs.getX(ic), cy = uvs.getY(ic);
+                    var denominator = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+                    if (Math.abs(denominator) < 1e-8) continue;
+
+                    var a =
+                        ((by - cy) * (textureUv.x - cx) +
+                            (cx - bx) * (textureUv.y - cy)) /
+                        denominator;
+                    var b =
+                        ((cy - ay) * (textureUv.x - cx) +
+                            (ax - cx) * (textureUv.y - cy)) /
+                        denominator;
+                    var c = 1 - a - b;
+                    if (a < -0.001 || b < -0.001 || c < -0.001) continue;
+
+                    var px =
+                        a * positions.getX(ia) +
+                        b * positions.getX(ib) +
+                        c * positions.getX(ic);
+                    var py =
+                        a * positions.getY(ia) +
+                        b * positions.getY(ib) +
+                        c * positions.getY(ic);
+                    var pz =
+                        a * positions.getZ(ia) +
+                        b * positions.getZ(ib) +
+                        c * positions.getZ(ic);
+                    if (pz < 0.02 || Math.abs(px) > 0.17) continue;
+                    return new THREE.Vector3(px, py, pz);
+                }
+                return null;
+            }
+
+            function getOverlayScreenPoint(kind) {
+                var textureX = FRONT_CX;
+                var textureY = textY;
+                if (kind === "logo") {
+                    textureX = logoX;
+                    textureY = logoY;
+                }
+                var localPoint = findFrontPositionAtTexture(textureX, textureY);
+                if (!localPoint) return null;
+                meshGroup.updateMatrixWorld(true);
+                camera.updateMatrixWorld(true);
+                var worldPoint = shirtMesh.localToWorld(localPoint);
+                var projected = worldPoint.project(camera);
+                var rect = renderer.domElement.getBoundingClientRect();
+                return {
+                    x: rect.left + ((projected.x + 1) / 2) * rect.width,
+                    y: rect.top + ((1 - projected.y) / 2) * rect.height,
+                };
+            }
+
+            function getEventPoint(e) {
+                var point = e.touches && e.touches.length ? e.touches[0] : e;
+                return { x: point.clientX, y: point.clientY };
+            }
+
+            function projectPointerToFrontTexture(e) {
+                if (!shirtMesh || !useGltf) return null;
+                var point = getEventPoint(e);
+                var rect = renderer.domElement.getBoundingClientRect();
+                if (!rect.width || !rect.height) return null;
+
+                overlayPointer.x = ((point.x - rect.left) / rect.width) * 2 - 1;
+                overlayPointer.y = -((point.y - rect.top) / rect.height) * 2 + 1;
+                overlayRaycaster.setFromCamera(overlayPointer, camera);
+
+                var hits = overlayRaycaster.intersectObject(shirtMesh, false);
+                for (var hi = 0; hi < hits.length; hi++) {
+                    var hit = hits[hi];
+                    var localHit = hit.object.worldToLocal(hit.point.clone());
+                    if (localHit.z < 0.02 || !hit.uv) continue;
+                    var texturePoint = new THREE.Vector2(
+                        hit.uv.x * 1024,
+                        (1 - hit.uv.y) * 1024,
+                    );
+                    if (texturePoint.x < 40 || texturePoint.x > 470) continue;
+                    return texturePoint;
+                }
+                return null;
+            }
+
+            function overlayHit(point) {
+                if (!point) return null;
+                if (textValue) {
+                    texCtx.save();
+                    var fs = (textSize / 100) * 1024;
+                    texCtx.font =
+                        "700 " +
+                        Math.round(fs) +
+                        'px Outfit, "Inter", sans-serif';
+                    var textW = texCtx.measureText(textValue).width;
+                    texCtx.restore();
+                    if (
+                        Math.abs(point.x - FRONT_CX) < Math.max(textW / 2, 35) &&
+                        Math.abs(point.y - textY) < Math.max(fs / 2, 35)
+                    ) {
+                        return "text";
+                    }
+                }
+                if (logoImg) {
+                    var logoW = (logoSize / 100) * 1024;
+                    var logoH =
+                        logoW * (logoImg.height / Math.max(1, logoImg.width));
+                    var logoCenterX = logoX;
+                    var logoCenterY = logoY;
+                    var dx = point.x - logoCenterX;
+                    var dy = point.y - logoCenterY;
+                    var angle = (logoRotation * Math.PI) / 180;
+                    var localX = dx * Math.cos(angle) + dy * Math.sin(angle);
+                    var localY = -dx * Math.sin(angle) + dy * Math.cos(angle);
+                    if (
+                        Math.abs(localX) < Math.max(logoW / 2, 35) &&
+                        Math.abs(localY) < Math.max(logoH / 2, 35)
+                    ) {
+                        return "logo";
+                    }
+                }
+                return null;
+            }
+
             function ptrDown(e) {
-                isDragging = true;
-                prevX = e.clientX != null ? e.clientX : e.touches[0].clientX;
-                prevY = e.clientY != null ? e.clientY : e.touches[0].clientY;
+                var point = getEventPoint(e);
+                var texturePoint = projectPointerToFrontTexture(e);
+                dragOverlay = overlayHit(texturePoint);
+                isDragging = !dragOverlay;
+                prevX = point.x;
+                prevY = point.y;
+                if (dragOverlay) {
+                    e.preventDefault();
+                    renderer.domElement.style.cursor = "move";
+                }
             }
             function ptrMove(e) {
+                var point = getEventPoint(e);
+                if (dragOverlay) {
+                    e.preventDefault();
+                    var texturePoint = projectPointerToFrontTexture(e);
+                    if (!texturePoint) return;
+                    if (dragOverlay === "logo") {
+                        logoX = Math.max(70, Math.min(440, texturePoint.x));
+                        logoY = Math.max(270, Math.min(930, texturePoint.y));
+                } else {
+                    var textWidth = texCtx.measureText(textValue).width;
+                    FRONT_CX = Math.max(
+                        70 + textWidth / 2,
+                        Math.min(440 - textWidth / 2, texturePoint.x),
+                    );
+                    textY = Math.max(250, Math.min(900, texturePoint.y));
+                    if (textInput) textInput.dataset.hasPlacement = "true";
+                }
+                    syncTexture();
+                    return;
+                }
                 if (!isDragging) return;
-                var x = e.clientX != null ? e.clientX : e.touches[0].clientX;
-                var y = e.clientY != null ? e.clientY : e.touches[0].clientY;
-                rotY += (x - prevX) * 0.008;
-                rotX += (y - prevY) * 0.006;
+                rotY += (point.x - prevX) * 0.008;
+                rotX += (point.y - prevY) * 0.006;
                 rotX = Math.max(-0.55, Math.min(0.55, rotX));
-                prevX = x;
-                prevY = y;
+                prevX = point.x;
+                prevY = point.y;
             }
             function ptrUp() {
                 isDragging = false;
+                dragOverlay = null;
+                renderer.domElement.style.cursor = "grab";
             }
 
+            renderer.domElement.style.cursor = "grab";
             renderer.domElement.addEventListener("mousedown", ptrDown);
             renderer.domElement.addEventListener("mousemove", ptrMove);
             renderer.domElement.addEventListener("mouseup", ptrUp);
@@ -723,7 +1506,7 @@
                 passive: true,
             });
             renderer.domElement.addEventListener("touchmove", ptrMove, {
-                passive: true,
+                passive: false,
             });
             renderer.domElement.addEventListener("touchend", ptrUp);
             renderer.domElement.addEventListener(
@@ -766,43 +1549,56 @@
             var colorStripe = document.getElementById("color-stripe");
             var stripeCountEl = document.getElementById("stripe-count");
             var stripeWidthEl = document.getElementById("stripe-width");
-            var logoSizeEl = document.getElementById("logo-size");
-            var logoYEl = document.getElementById("logo-y");
             var brightnessEl = document.getElementById("brightness");
             var logoUpload = document.getElementById("logo-upload");
             var logoLabel = document.getElementById("logo-label");
+            var logoSizeEl = document.getElementById("logo-size");
+            var logoRotationEl = document.getElementById("logo-rotation");
+            var logoMirrorEl = document.getElementById("logo-mirror");
+            var textInput = document.getElementById("text-input");
+            var textColorEl = document.getElementById("text-color");
+            var textSizeEl = document.getElementById("text-size");
+
+            function setBaseColor(value) {
+                targetZoneKeys().forEach(function (k) {
+                    zones[k].colors[0] = value;
+                });
+                drawTexture();
+            }
+            function setAccentColor(value) {
+                targetZoneKeys().forEach(function (k) {
+                    zones[k].colors[1] = value;
+                });
+                drawTexture();
+            }
+            function setStripeCount(value) {
+                targetZoneKeys().forEach(function (k) {
+                    zones[k].stripeCount = value;
+                });
+                document.getElementById("stripe-count-label").textContent =
+                    value;
+                drawTexture();
+            }
+            function setStripeWidth(value) {
+                targetZoneKeys().forEach(function (k) {
+                    zones[k].stripeWidth = value;
+                });
+                document.getElementById("stripe-width-label").textContent =
+                    value + "%";
+                drawTexture();
+            }
 
             colorBase.addEventListener("input", function (e) {
-                baseColor = e.target.value;
-                drawTexture();
+                setBaseColor(e.target.value);
             });
             colorStripe.addEventListener("input", function (e) {
-                stripeColor = e.target.value;
-                drawTexture();
+                setAccentColor(e.target.value);
             });
             stripeCountEl.addEventListener("input", function (e) {
-                stripeCount = +e.target.value;
-                document.getElementById("stripe-count-label").textContent =
-                    stripeCount;
-                drawTexture();
+                setStripeCount(+e.target.value);
             });
             stripeWidthEl.addEventListener("input", function (e) {
-                stripeWidth = +e.target.value;
-                document.getElementById("stripe-width-label").textContent =
-                    stripeWidth + "%";
-                drawTexture();
-            });
-            logoSizeEl.addEventListener("input", function (e) {
-                logoSize = +e.target.value;
-                document.getElementById("logo-size-label").textContent =
-                    logoSize + "%";
-                drawTexture();
-            });
-            logoYEl.addEventListener("input", function (e) {
-                logoY = +e.target.value;
-                document.getElementById("logo-y-label").textContent =
-                    logoY + "%";
-                drawTexture();
+                setStripeWidth(+e.target.value);
             });
             brightnessEl.addEventListener("input", function (e) {
                 brightness = +e.target.value;
@@ -812,28 +1608,67 @@
             logoUpload.addEventListener("change", function (e) {
                 var file = e.target.files[0];
                 if (!file) return;
+                logoLabel.textContent =
+                    file.name.length > 22
+                        ? file.name.slice(0, 20) + "…"
+                        : file.name;
                 var reader = new FileReader();
                 reader.onload = function (ev) {
                     var img = new Image();
                     img.onload = function () {
                         logoImg = img;
-                        logoLabel.textContent =
-                            file.name.length > 22
-                                ? file.name.slice(0, 20) + "…"
-                                : file.name;
-                        drawTexture();
+                        logoDataUrl = ev.target.result;
+                        syncTexture();
                     };
                     img.src = ev.target.result;
                 };
                 reader.readAsDataURL(file);
             });
 
+            if (logoSizeEl)
+                logoSizeEl.addEventListener("input", function (e) {
+                    logoSize = +e.target.value;
+                    document.getElementById("logo-size-label").textContent =
+                        logoSize + "%";
+                    syncTexture();
+                });
+            if (logoRotationEl)
+                logoRotationEl.addEventListener("input", function (e) {
+                    logoRotation = +e.target.value;
+                    document.getElementById(
+                        "logo-rotation-label",
+                    ).textContent = Math.round(logoRotation) + "°";
+                    syncTexture();
+                });
+            if (logoMirrorEl)
+                logoMirrorEl.addEventListener("change", function (e) {
+                    logoMirror = e.target.checked;
+                    syncTexture();
+                });
+
+            if (textInput)
+                textInput.addEventListener("input", function (e) {
+                    textValue = e.target.value;
+                    syncTexture();
+                });
+            if (textColorEl)
+                textColorEl.addEventListener("input", function (e) {
+                    textColor = e.target.value;
+                    syncTexture();
+                });
+            if (textSizeEl)
+                textSizeEl.addEventListener("input", function (e) {
+                    textSize = +e.target.value;
+                    document.getElementById("text-size-label").textContent =
+                        textSize + "%";
+                    syncTexture();
+                });
+
             document
                 .querySelectorAll("#preset-colors button")
                 .forEach(function (btn) {
                     btn.addEventListener("click", function () {
-                        baseColor = btn.dataset.color;
-                        colorBase.value = baseColor;
+                        setBaseColor(btn.dataset.color);
                         document
                             .querySelectorAll("#preset-colors button")
                             .forEach(function (b) {
@@ -842,23 +1677,102 @@
                             });
                         btn.classList.add("border-white/30");
                         btn.classList.remove("border-transparent");
-                        drawTexture();
                     });
                 });
 
-            function setPatternMode(mode) {
-                patternMode = mode;
+            function updatePatternButtons() {
+                var base = "w-full py-2 rounded-xl text-xs font-medium transition ";
+                var active = "bg-brand-500 text-dark-950";
+                var idle = "bg-white/5 text-white/70 hover:bg-white/10";
+                var z = primaryTargetZone();
                 document.getElementById("btn-pattern-vertical").className =
-                    "flex-1 py-2 rounded-xl text-xs font-medium transition " +
-                    (mode === "vertical"
-                        ? "bg-brand-500 text-dark-950"
-                        : "bg-white/5 text-white/70 hover:bg-white/10");
+                    base +
+                    (z.pattern === "vertical-stripes" ? active : idle);
                 document.getElementById("btn-pattern-horizontal").className =
-                    "flex-1 py-2 rounded-xl text-xs font-medium transition " +
-                    (mode === "horizontal"
-                        ? "bg-brand-500 text-dark-950"
-                        : "bg-white/5 text-white/70 hover:bg-white/10");
+                    base + (z.pattern === "hoops" ? active : idle);
+            }
+
+            function syncZoneControls() {
+                var z = primaryTargetZone();
+                colorBase.value = z.colors[0];
+                colorStripe.value = z.colors[1];
+                stripeCountEl.value = z.stripeCount;
+                stripeWidthEl.value = z.stripeWidth;
+                document.getElementById("stripe-count-label").textContent =
+                    z.stripeCount;
+                document.getElementById("stripe-width-label").textContent =
+                    z.stripeWidth + "%";
+                if (window.__syncColorPlate)
+                    window.__syncColorPlate(z.colors[0]);
+                updatePatternButtons();
+            }
+
+            function setActiveDesign(id) {
+                activeDesignId = id;
+                var nodes = document.querySelectorAll(
+                    "#design-grid .design-swatch",
+                );
+                for (var si = 0; si < nodes.length; si++) {
+                    var on = nodes[si].getAttribute("data-id") === id;
+                    nodes[si].classList.toggle("border-brand-400", on);
+                    nodes[si].classList.toggle("border-transparent", !on);
+                }
+            }
+
+            function setPatternMode(mode) {
+                var p = mode === "horizontal" ? "hoops" : "vertical-stripes";
+                targetZoneKeys().forEach(function (k) {
+                    zones[k].pattern = p;
+                });
+                setActiveDesign(null);
+                updatePatternButtons();
                 drawTexture();
+            }
+
+            function applyDesignToTargets(preset) {
+                targetZoneKeys().forEach(function (k) {
+                    zones[k].pattern = preset.pattern || "solid";
+                    zones[k].colors = [
+                        (preset.colors && preset.colors[0]) || "#fef013",
+                        (preset.colors && preset.colors[1]) || "#ffffff",
+                    ];
+                    zones[k].stripeCount =
+                        preset.stripeCount != null ? preset.stripeCount : 3;
+                    zones[k].stripeWidth =
+                        preset.stripeWidth != null ? preset.stripeWidth : 10;
+                });
+                syncZoneControls();
+                setActiveDesign(preset.id);
+                drawTexture();
+            }
+
+            // Zone selector (Semua / Depan / Belakang / Lengan L / Lengan R)
+            var zoneSelector = document.getElementById("zone-selector");
+            function setActiveZone(zone) {
+                activeZone = zone;
+                if (zoneSelector) {
+                    var btns = zoneSelector.querySelectorAll("[data-zone]");
+                    for (var zi = 0; zi < btns.length; zi++) {
+                        var on = btns[zi].getAttribute("data-zone") === zone;
+                        btns[zi].className =
+                            "px-2.5 py-1 rounded-lg text-xs font-medium transition " +
+                            (on
+                                ? "bg-brand-500 text-dark-950"
+                                : "bg-white/5 text-white/60 hover:bg-white/10");
+                    }
+                }
+                setActiveDesign(null);
+                syncZoneControls();
+                drawTexture();
+            }
+            if (zoneSelector) {
+                zoneSelector
+                    .querySelectorAll("[data-zone]")
+                    .forEach(function (b) {
+                        b.addEventListener("click", function () {
+                            setActiveZone(b.getAttribute("data-zone"));
+                        });
+                    });
             }
 
             document
@@ -872,59 +1786,184 @@
                     setPatternMode("horizontal");
                 });
 
+            // Build the design preset gallery
+            var designGrid = document.getElementById("design-grid");
+            if (designGrid) {
+                DESIGNS.forEach(function (preset) {
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.setAttribute("data-id", preset.id);
+                    btn.title = preset.name;
+                    btn.className =
+                        "design-swatch relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-white/40 transition";
+                    var cv = document.createElement("canvas");
+                    cv.width = 120;
+                    cv.height = 120;
+                    cv.className = "w-full h-full block";
+                    renderPattern(cv.getContext("2d"), cv.width, cv.height, preset);
+                    btn.appendChild(cv);
+                    btn.addEventListener("click", function () {
+                        applyDesignToTargets(preset);
+                    });
+                    designGrid.appendChild(btn);
+                });
+                var countEl = document.getElementById("design-count");
+                if (countEl) countEl.textContent = DESIGNS.length + " desain";
+            }
+
+            if (DESIGNS.length) {
+                applyDesignToTargets(DESIGNS[0]);
+            } else {
+                syncZoneControls();
+                drawTexture();
+            }
+
+            function exportDesign() {
+                resizeCanvas();
+                renderer.render(scene, camera);
+                var link = document.createElement("a");
+                link.download = "jersey-preview-" + Date.now() + ".png";
+                link.href = renderer.domElement.toDataURL("image/png");
+                link.click();
+            }
+
             document
                 .getElementById("btn-export")
-                .addEventListener("click", function () {
-                    var exportCanvas = document.createElement("canvas");
-                    exportCanvas.width = 1024;
-                    exportCanvas.height = 1024;
-                    var ctx = exportCanvas.getContext("2d");
-                    ctx.drawImage(texCanvas, 0, 0, 1024, 1024);
-                    var link = document.createElement("a");
-                    link.download = "jersey-design-" + Date.now() + ".png";
-                    link.href = exportCanvas.toDataURL("image/png");
-                    link.click();
-
-                    renderer.render(scene, camera);
-                    setTimeout(function () {
-                        var link2 = document.createElement("a");
-                        link2.download =
-                            "jersey-3d-preview-" + Date.now() + ".png";
-                        link2.href = renderer.domElement.toDataURL("image/png");
-                        link2.click();
-                    }, 250);
-                });
+                .addEventListener("click", exportDesign);
 
             document
                 .getElementById("btn-reset")
                 .addEventListener("click", function () {
-                    baseColor = "#fef013";
-                    stripeColor = "#ffffff";
-                    stripeCount = 2;
-                    stripeWidth = 8;
-                    logoSize = 18;
-                    logoY = 32;
+                    ZONE_KEYS.forEach(function (k) {
+                        zones[k] = makeZoneState();
+                    });
                     brightness = 100;
-                    logoImg = null;
-                    colorBase.value = baseColor;
-                    colorStripe.value = stripeColor;
-                    stripeCountEl.value = 2;
-                    stripeWidthEl.value = 8;
-                    logoSizeEl.value = 18;
-                    logoYEl.value = 32;
                     brightnessEl.value = 100;
-                    document.getElementById("stripe-count-label").textContent =
-                        "2";
-                    document.getElementById("stripe-width-label").textContent =
-                        "8%";
-                    document.getElementById("logo-size-label").textContent =
-                        "18%";
-                    document.getElementById("logo-y-label").textContent = "32%";
+                    logoImg = null;
+                    logoDataUrl = null;
+                    logoSize = 18;
+                    logoX = 256;
+                    logoY = 560;
+                    logoRotation = 0;
+                    logoMirror = false;
+                    textValue = "";
+                    textColor = "#ffffff";
+                    textSize = 12;
+                    FRONT_CX = 256;
+                    textY = 640;
                     logoLabel.textContent = "Upload Logo (PNG transparan)";
                     logoUpload.value = "";
-                    if (window.__syncColorPlate) window.__syncColorPlate(baseColor);
-                    setPatternMode("vertical");
+                    if (logoSizeEl) logoSizeEl.value = 18;
+                    if (logoRotationEl) logoRotationEl.value = 0;
+                    if (logoMirrorEl) logoMirrorEl.checked = false;
+                    if (textInput) textInput.value = "";
+                    if (textColorEl) textColorEl.value = "#ffffff";
+                    if (textSizeEl) textSizeEl.value = 12;
+                    document.getElementById("logo-size-label").textContent =
+                        "18%";
+                    document.getElementById(
+                        "logo-rotation-label",
+                    ).textContent = "0°";
+                    document.getElementById("text-size-label").textContent =
+                        "12%";
+                    setActiveZone("all");
                 });
+
+            function getSnapshot() {
+                return {
+                    v: 1,
+                    brightness: brightness,
+                    activeZone: activeZone,
+                    zones: JSON.parse(JSON.stringify(zones)),
+                    logo: {
+                        data: logoDataUrl,
+                        size: logoSize,
+                        x: logoX,
+                        y: logoY,
+                        rotation: logoRotation,
+                        mirror: logoMirror,
+                    },
+                    text: {
+                        value: textValue,
+                        color: textColor,
+                        size: textSize,
+                        x: FRONT_CX,
+                        y: textY,
+                    },
+                };
+            }
+
+            function applySnapshot(snap) {
+                if (!snap) return;
+                if (snap.brightness != null) {
+                    brightness = snap.brightness;
+                    brightnessEl.value = brightness;
+                }
+                if (snap.zones) {
+                    ZONE_KEYS.forEach(function (k) {
+                        zones[k] = Object.assign(
+                            makeZoneState(),
+                            snap.zones[k] || {},
+                        );
+                    });
+                }
+                if (snap.logo) {
+                    logoSize = snap.logo.size != null ? snap.logo.size : 18;
+                    logoX = snap.logo.x != null ? snap.logo.x : 256;
+                    logoY = snap.logo.y != null ? snap.logo.y : 560;
+                    logoRotation =
+                        snap.logo.rotation != null ? snap.logo.rotation : 0;
+                    logoMirror = snap.logo.mirror === true;
+                    if (logoSizeEl) logoSizeEl.value = logoSize;
+                    if (logoRotationEl) logoRotationEl.value = logoRotation;
+                    if (logoMirrorEl) logoMirrorEl.checked = logoMirror;
+                    document.getElementById("logo-size-label").textContent =
+                        logoSize + "%";
+                    document.getElementById(
+                        "logo-rotation-label",
+                    ).textContent = Math.round(logoRotation) + "°";
+                    loadLogo(snap.logo.data);
+                } else {
+                    logoImg = null;
+                    logoDataUrl = null;
+                }
+                if (snap.text) {
+                    textValue = snap.text.value || "";
+                    textColor = snap.text.color || "#ffffff";
+                    textSize = snap.text.size != null ? snap.text.size : 12;
+                    FRONT_CX = snap.text.x != null ? snap.text.x : 256;
+                    textY = snap.text.y != null ? snap.text.y : 640;
+                    if (textInput) textInput.value = textValue;
+                    if (textColorEl) textColorEl.value = textColor;
+                    if (textSizeEl) textSizeEl.value = textSize;
+                    document.getElementById("text-size-label").textContent =
+                        textSize + "%";
+                }
+                setActiveZone(snap.activeZone || "all");
+            }
+
+            function loadLogo(dataUrl) {
+                if (!dataUrl) {
+                    logoImg = null;
+                    logoDataUrl = null;
+                    return;
+                }
+                var img = new Image();
+                img.onload = function () {
+                    logoImg = img;
+                    logoDataUrl = dataUrl;
+                    syncTexture();
+                };
+                img.src = dataUrl;
+            }
+
+            // Expose a small API for integration/testing
+            window.__jersey = {
+                getSnapshot: getSnapshot,
+                applySnapshot: applySnapshot,
+                exportDesign: exportDesign,
+                getOverlayScreenPoint: getOverlayScreenPoint,
+            };
         }
     })();
 </script>

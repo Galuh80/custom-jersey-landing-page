@@ -1,0 +1,404 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Upload Galeri | Surly Apparel"
+    description="Unggah gambar produksi, dikonversi ke WebP otomatis dan masuk ke Galeri Produksi."
+>
+    <header
+        class="sticky top-0 z-50 bg-dark-950/80 backdrop-blur-md border-b border-white/5"
+    >
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <a href="/" class="flex items-center gap-2">
+                    <img
+                        src="/logo.png"
+                        alt="Surly Apparel logo"
+                        width="40"
+                        height="40"
+                        class="w-10 h-10 object-contain"
+                    />
+                    <span
+                        class="font-display font-bold text-xl tracking-tight hidden sm:block whitespace-nowrap"
+                    >
+                        Surly Apparel
+                    </span>
+                </a>
+                <a
+                    href="/"
+                    class="text-sm font-medium text-white/70 hover:text-white transition"
+                >
+                    ← Beranda
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+        <h1 class="font-display text-3xl md:text-4xl font-bold mb-2">
+            Upload Galeri Produksi
+        </h1>
+        <p class="text-white/60 mb-8 text-sm md:text-base">
+            Gambar dikonversi ke WebP lalu diunggah ke Supabase Storage dan
+            langsung tampil di Galeri Produksi.
+        </p>
+
+        <div
+            id="setup-warning"
+            class="hidden mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 text-sm px-4 py-3"
+        >
+            Supabase belum dikonfigurasi. Isi
+            <code>PUBLIC_SUPABASE_URL</code>,
+            <code>PUBLIC_SUPABASE_ANON_KEY</code>, dan
+            <code>PUBLIC_SUPABASE_BUCKET</code> di <code>.env</code>.
+        </div>
+
+        <!-- Login -->
+        <section
+            id="login-view"
+            class="hidden bg-dark-800/70 border border-white/5 rounded-2xl p-6 max-w-md"
+        >
+            <h2 class="font-display font-semibold mb-4">Masuk sebagai Admin</h2>
+            <div class="space-y-3">
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    autocomplete="username"
+                    class="w-full bg-dark-900/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-brand-500/50"
+                />
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                    class="w-full bg-dark-900/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-brand-500/50"
+                />
+                <button
+                    type="button"
+                    id="login"
+                    class="w-full bg-brand-500 hover:bg-brand-400 text-dark-950 font-semibold px-5 py-2.5 rounded-full transition btn-press"
+                >
+                    Masuk
+                </button>
+                <p id="login-status" class="text-sm text-red-300"></p>
+            </div>
+        </section>
+
+        <!-- App -->
+        <div id="app-view" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <p class="text-sm text-white/50">
+                    Masuk sebagai <span id="user-email" class="text-white/80"></span>
+                </p>
+                <button
+                    type="button"
+                    id="logout"
+                    class="text-sm text-white/60 hover:text-white transition"
+                >
+                    Keluar
+                </button>
+            </div>
+
+            <section
+                class="bg-dark-800/70 border border-white/5 rounded-2xl p-6 mb-10"
+            >
+                <h2 class="font-display font-semibold mb-4">Tambah Gambar</h2>
+                <label
+                    class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/15 rounded-xl cursor-pointer hover:border-brand-500/40 transition overflow-hidden"
+                >
+                    <img
+                        id="preview"
+                        class="hidden h-full w-full object-contain"
+                    />
+                    <span
+                        id="drop-label"
+                        class="text-sm text-white/50 p-4 text-center"
+                    >
+                        Klik untuk pilih gambar (JPG/PNG/WebP)
+                    </span>
+                    <input
+                        type="file"
+                        id="file"
+                        accept="image/*"
+                        class="hidden"
+                    />
+                </label>
+                <div class="flex flex-wrap items-center gap-3 mt-4">
+                    <button
+                        type="button"
+                        id="upload"
+                        class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 font-semibold px-5 py-2.5 rounded-full transition btn-press"
+                    >
+                        Konversi & Upload
+                    </button>
+                    <span id="status" class="text-sm text-white/50"></span>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-display font-semibold">
+                        Galeri Saat Ini
+                        <span id="count" class="text-white/40 font-normal"
+                            >(0)</span
+                        >
+                    </h2>
+                    <button
+                        type="button"
+                        id="refresh"
+                        class="text-sm text-white/60 hover:text-white transition"
+                    >
+                        Muat ulang
+                    </button>
+                </div>
+                <div
+                    id="list"
+                    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+                ></div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        import {
+            supabase,
+            getPublicUrl,
+            SUPABASE_BUCKET,
+        } from "../lib/supabase";
+
+        const loginView = document.getElementById("login-view");
+        const appView = document.getElementById("app-view");
+        const warning = document.getElementById("setup-warning");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const loginBtn = document.getElementById("login");
+        const loginStatus = document.getElementById("login-status");
+        const logoutBtn = document.getElementById("logout");
+        const userEmail = document.getElementById("user-email");
+        const fileInput = document.getElementById("file");
+        const preview = document.getElementById("preview");
+        const dropLabel = document.getElementById("drop-label");
+        const uploadBtn = document.getElementById("upload");
+        const statusEl = document.getElementById("status");
+        const listEl = document.getElementById("list");
+        const countEl = document.getElementById("count");
+        const refreshBtn = document.getElementById("refresh");
+
+        function setStatus(message, kind) {
+            statusEl.textContent = message || "";
+            statusEl.className =
+                "text-sm " +
+                (kind === "ok"
+                    ? "text-emerald-300"
+                    : kind === "error"
+                      ? "text-red-300"
+                      : "text-white/50");
+        }
+
+        function slugify(name) {
+            return (
+                String(name)
+                    .replace(/\.[^.]+$/, "")
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "")
+                    .slice(0, 40) || "jersey"
+            );
+        }
+
+        function toWebp(file) {
+            return createImageBitmap(file).then((bitmap) => {
+                const canvas = document.createElement("canvas");
+                canvas.width = bitmap.width;
+                canvas.height = bitmap.height;
+                canvas
+                    .getContext("2d")
+                    .drawImage(bitmap, 0, 0, bitmap.width, bitmap.height);
+                if (bitmap.close) bitmap.close();
+                return new Promise((resolve, reject) => {
+                    canvas.toBlob(
+                        (blob) =>
+                            blob
+                                ? resolve(blob)
+                                : reject(new Error("Gagal konversi WebP")),
+                        "image/webp",
+                        0.85,
+                    );
+                });
+            });
+        }
+
+        function renderList(rows) {
+            countEl.textContent = `(${rows.length})`;
+            listEl.innerHTML = "";
+            if (!rows.length) {
+                listEl.innerHTML =
+                    '<p class="text-sm text-white/40 col-span-full">Belum ada gambar.</p>';
+                return;
+            }
+            rows.forEach((row) => {
+                const card = document.createElement("div");
+                card.className =
+                    "group aspect-[4/3] rounded-xl overflow-hidden border border-white/5 bg-dark-800 relative";
+
+                const img = document.createElement("img");
+                img.src = getPublicUrl(row.path);
+                img.alt = row.path;
+                img.loading = "lazy";
+                img.className = "w-full h-full object-contain";
+                card.appendChild(img);
+
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.textContent = "Hapus";
+                remove.className =
+                    "absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-red-500/80 hover:bg-red-500 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition";
+                remove.addEventListener("click", () => removeImage(row));
+                card.appendChild(remove);
+
+                const label = document.createElement("span");
+                label.textContent = row.path;
+                label.className =
+                    "absolute bottom-0 left-0 right-0 px-2 py-1 bg-dark-950/70 text-[10px] text-white/60 truncate";
+                card.appendChild(label);
+
+                listEl.appendChild(card);
+            });
+        }
+
+        async function loadList() {
+            const { data, error } = await supabase
+                .from("portfolios")
+                .select("id,path,created_at")
+                .order("created_at", { ascending: false });
+            if (error) {
+                setStatus("Gagal memuat daftar: " + error.message, "error");
+                return;
+            }
+            renderList(data || []);
+        }
+
+        async function removeImage(row) {
+            if (!window.confirm(`Hapus "${row.path}" ?`)) return;
+            const { error: storageError } = await supabase.storage
+                .from(SUPABASE_BUCKET)
+                .remove([row.path]);
+            if (storageError) {
+                setStatus("Gagal hapus file: " + storageError.message, "error");
+                return;
+            }
+            const { error } = await supabase
+                .from("portfolios")
+                .delete()
+                .eq("id", row.id);
+            if (error) {
+                setStatus("Gagal hapus data: " + error.message, "error");
+                return;
+            }
+            setStatus("Dihapus: " + row.path, "ok");
+            loadList();
+        }
+
+        function showView(name) {
+            loginView.classList.toggle("hidden", name !== "login");
+            appView.classList.toggle("hidden", name !== "app");
+            warning.classList.toggle("hidden", name !== "warn");
+        }
+
+        function renderSession(session) {
+            if (session) {
+                userEmail.textContent = session.user.email || "";
+                showView("app");
+                loadList();
+            } else {
+                showView("login");
+            }
+        }
+
+        if (!supabase) {
+            showView("warn");
+        } else {
+            supabase.auth.getSession().then(({ data }) => {
+                renderSession(data.session);
+            });
+            supabase.auth.onAuthStateChange((_event, session) => {
+                renderSession(session);
+            });
+
+            loginBtn.addEventListener("click", async () => {
+                loginStatus.textContent = "";
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: emailInput.value.trim(),
+                    password: passwordInput.value,
+                });
+                if (error) loginStatus.textContent = error.message;
+            });
+
+            logoutBtn.addEventListener("click", () => supabase.auth.signOut());
+
+            fileInput.addEventListener("change", () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove("hidden");
+                dropLabel.classList.add("hidden");
+                setStatus("");
+            });
+
+            uploadBtn.addEventListener("click", async () => {
+                const file = fileInput.files[0];
+                if (!file) {
+                    setStatus("Pilih gambar dulu.", "error");
+                    return;
+                }
+                let step = "konversi";
+                try {
+                    const { data: sessionData } = await supabase.auth.getSession();
+                    if (!sessionData.session) {
+                        throw new Error("Belum login (session kosong)");
+                    }
+                    setStatus("Mengonversi ke WebP...");
+                    const blob = await toWebp(file);
+                    const path = slugify(file.name) + "-" + Date.now() + ".webp";
+
+                    step = "upload Storage";
+                    setStatus("Mengunggah ke Storage...");
+                    const { error: uploadError } = await supabase.storage
+                        .from(SUPABASE_BUCKET)
+                        .upload(path, blob, {
+                            contentType: "image/webp",
+                            upsert: false,
+                        });
+                    if (uploadError) throw uploadError;
+
+                    step = "insert tabel";
+                    setStatus("Menyimpan data...");
+                    const { error: insertError } = await supabase
+                        .from("portfolios")
+                        .insert({ path });
+                    if (insertError) throw insertError;
+
+                    setStatus("Berhasil: " + path, "ok");
+                    fileInput.value = "";
+                    preview.src = "";
+                    preview.classList.add("hidden");
+                    dropLabel.classList.remove("hidden");
+                    loadList();
+                } catch (error) {
+                    const extra = [error.code, error.details, error.hint]
+                        .filter(Boolean)
+                        .join(" | ");
+                    setStatus(
+                        `Gagal di ${step}: ${error.message}` +
+                            (extra ? ` (${extra})` : ""),
+                        "error",
+                    );
+                }
+            });
+
+            refreshBtn.addEventListener("click", loadList);
+        }
+    </script>
+</Layout>

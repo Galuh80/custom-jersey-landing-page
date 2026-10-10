@@ -20,7 +20,11 @@ try {
         )
         .map((file) => `/portfolio/${file}`);
 } catch {
-    // Fallback if the folder can't be read at build time (e.g. CI working dir).
+    gallery = [];
+}
+// If the folder could not be read at build time, fall back to the shipped
+// images so the production gallery never renders empty.
+if (!gallery.length) {
     gallery = Array.from(
         { length: 16 },
         (_, i) => `/portfolio/portfolio-${i + 1}.webp`,

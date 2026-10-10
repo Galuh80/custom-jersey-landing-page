@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /upload
+Allow: /editor
+
+Sitemap: https://surlyapparel.com/sitemap.xml

@@ -1,5 +1,23 @@
 ---
+import fs from "node:fs";
+import path from "node:path";
 import Layout from "../layouts/Layout.astro";
+
+// Built-in images shipped in /public/portfolio/, mixed with Supabase uploads.
+let localPortfolio = [];
+try {
+    localPortfolio = fs
+        .readdirSync(path.join(process.cwd(), "public", "portfolio"))
+        .filter((file) => /\.(webp|jpe?g|png|gif|avif)$/i.test(file))
+        .sort((a, b) =>
+            a.localeCompare(b, undefined, {
+                numeric: true,
+                sensitivity: "base",
+            }),
+        );
+} catch {
+    localPortfolio = [];
+}
 ---
 
 <Layout
@@ -624,6 +642,13 @@ import Layout from "../layouts/Layout.astro";
         src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"
     ></script>
 
+    <script
+        is:inline
+        type="application/json"
+        id="local-portfolio"
+        set:html={JSON.stringify(localPortfolio)}
+    ></script>
+
     <script>
         import {
             supabase,
@@ -697,27 +722,35 @@ import Layout from "../layouts/Layout.astro";
         let gTable = null;
         let galleryStore = [];
 
+        const gImgSrc = (row) =>
+            row.isLocal ? "/portfolio/" + row.path : getPublicUrl(row.path);
         const gCheckHtml = (row) =>
-            `<input type="checkbox" class="g-check accent-yellow-400" data-id="${row.id}" ${selG.has(row.id) ? "checked" : ""} />`;
+            `<input type="checkbox" class="g-check accent-yellow-400" data-id="${row.id}" ${row.isLocal ? "disabled" : ""} ${selG.has(row.id) ? "checked" : ""} />`;
         const gThumbHtml = (row) =>
-            `<div class="w-14"><img src="${getPublicUrl(row.path)}" alt="${row.path}" loading="lazy" class="h-14 w-14 object-contain rounded bg-dark-900"></div>`;
+            `<div class="w-14"><img src="${gImgSrc(row)}" alt="${row.path}" loading="lazy" class="h-14 w-14 object-contain rounded bg-dark-900"></div>`;
         const gActionHtml = (row) =>
-            `<button type="button" class="g-del text-red-300/80 hover:text-red-300" data-id="${row.id}" data-path="${row.path}" title="Hapus">Hapus</button>`;
+            row.isLocal
+                ? `<span class="text-white/30 text-xs">Lokal</span>`
+                : `<button type="button" class="g-del text-red-300/80 hover:text-red-300" data-id="${row.id}" data-path="${row.path}" title="Hapus">Hapus</button>`;
 
         function galleryFallback(data) {
             const tbody = document.querySelector("#tbl-gallery tbody");
             tbody.innerHTML = "";
             (data || []).forEach((row) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td><input type="checkbox" class="g-check" data-id="${row.id}"></td>
-                    <td><img src="${getPublicUrl(row.path)}" class="h-14 w-14 object-contain rounded" alt="${row.path}"></td>
+                tr.innerHTML = `<td>${gCheckHtml(row)}</td>
+                    <td>${gThumbHtml(row)}</td>
                     <td>${row.path}</td><td>${gActionHtml(row)}</td>`;
-                tr.querySelector(".g-check").addEventListener("change", function () {
-                    if (this.checked) selG.add(row.id);
-                    else selG.delete(row.id);
-                    updateGalleryBulk();
-                });
-                tr.querySelector(".g-del").addEventListener("click", () => removeImage(row));
+                const cb = tr.querySelector(".g-check");
+                if (cb && !cb.disabled)
+                    cb.addEventListener("change", function () {
+                        if (this.checked) selG.add(row.id);
+                        else selG.delete(row.id);
+                        updateGalleryBulk();
+                    });
+                const delBtn = tr.querySelector(".g-del");
+                if (delBtn)
+                    delBtn.addEventListener("click", () => removeImage(row));
                 tbody.appendChild(tr);
             });
             updateGalleryBulk();
@@ -790,6 +823,7 @@ import Layout from "../layouts/Layout.astro";
                 .off("change")
                 .on("change", function () {
                     $("#tbl-gallery tbody .g-check").each(function () {
+                        if (this.disabled) return;
                         const id = $(this).data("id");
                         if (this.checked) selG.add(id);
                         else selG.delete(id);
@@ -806,6 +840,20 @@ import Layout from "../layouts/Layout.astro";
         }
 
         async function loadList() {
+            let localFiles = [];
+            try {
+                localFiles = JSON.parse(
+                    document.getElementById("local-portfolio").textContent ||
+                        "[]",
+                );
+            } catch {
+                localFiles = [];
+            }
+            const localRows = localFiles.map((name) => ({
+                id: "local:" + name,
+                path: name,
+                isLocal: true,
+            }));
             const { data, error } = await supabase
                 .from("portfolios")
                 .select("id,path,created_at")
@@ -814,10 +862,22 @@ import Layout from "../layouts/Layout.astro";
                 setStatus("Gagal memuat daftar: " + error.message, "error");
                 return;
             }
-            initGalleryTable(data || []);
+            // Mix uploaded (Supabase) images with the built-in portfolio images.
+            const seen = new Set();
+            const combined = [];
+            [
+                ...(data || []).map((r) => ({ ...r, isLocal: false })),
+                ...localRows,
+            ].forEach((row) => {
+                if (seen.has(row.path)) return;
+                seen.add(row.path);
+                combined.push(row);
+            });
+            initGalleryTable(combined);
         }
 
         async function removeImage(row) {
+            if (row.isLocal || row.id.startsWith("local:")) return;
             if (!window.confirm(`Hapus "${row.path}" ?`)) return;
             const { error: storageError } = await supabase.storage
                 .from(SUPABASE_BUCKET)
@@ -840,7 +900,9 @@ import Layout from "../layouts/Layout.astro";
         }
 
         async function removeSelectedGallery() {
-            const rows = galleryStore.filter((r) => selG.has(r.id));
+            const rows = galleryStore.filter(
+                (r) => selG.has(r.id) && !r.isLocal,
+            );
             if (!rows.length) return;
             if (!window.confirm(`Hapus ${rows.length} gambar terpilih?`)) return;
             for (const row of rows) {

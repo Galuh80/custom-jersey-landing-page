@@ -101,65 +101,478 @@ import Layout from "../layouts/Layout.astro";
                 </button>
             </div>
 
-            <section
-                class="bg-dark-800/70 border border-white/5 rounded-2xl p-6 mb-10"
-            >
-                <h2 class="font-display font-semibold mb-4">Tambah Gambar</h2>
-                <label
-                    class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/15 rounded-xl cursor-pointer hover:border-brand-500/40 transition overflow-hidden"
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button
+                    type="button"
+                    id="tab-upload"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition bg-brand-500 text-dark-950"
                 >
-                    <img
-                        id="preview"
-                        class="hidden h-full w-full object-contain"
-                    />
-                    <span
-                        id="drop-label"
-                        class="text-sm text-white/50 p-4 text-center"
-                    >
-                        Klik untuk pilih gambar (JPG/PNG/WebP)
-                    </span>
-                    <input
-                        type="file"
-                        id="file"
-                        accept="image/*"
-                        class="hidden"
-                    />
-                </label>
-                <div class="flex flex-wrap items-center gap-3 mt-4">
-                    <button
-                        type="button"
-                        id="upload"
-                        class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 font-semibold px-5 py-2.5 rounded-full transition btn-press"
-                    >
-                        Konversi & Upload
-                    </button>
-                    <span id="status" class="text-sm text-white/50"></span>
-                </div>
-            </section>
+                    Upload Galeri
+                </button>
+                <button
+                    type="button"
+                    id="tab-nota"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition bg-white/5 text-white/70 hover:bg-white/10"
+                >
+                    Nota Online
+                </button>
+            </div>
 
-            <section>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-display font-semibold">
-                        Galeri Saat Ini
-                        <span id="count" class="text-white/40 font-normal"
-                            >(0)</span
-                        >
-                    </h2>
-                    <button
-                        type="button"
-                        id="refresh"
-                        class="text-sm text-white/60 hover:text-white transition"
+            <div id="panel-upload">
+                <section
+                    class="bg-dark-800/70 border border-white/5 rounded-2xl p-6 mb-10"
+                >
+                    <h2 class="font-display font-semibold mb-4">Tambah Gambar</h2>
+                    <label
+                        class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/15 rounded-xl cursor-pointer hover:border-brand-500/40 transition overflow-hidden"
                     >
-                        Muat ulang
-                    </button>
+                        <img
+                            id="preview"
+                            class="hidden h-full w-full object-contain"
+                        />
+                        <span
+                            id="drop-label"
+                            class="text-sm text-white/50 p-4 text-center"
+                        >
+                            Klik untuk pilih gambar (JPG/PNG/WebP)
+                        </span>
+                        <input
+                            type="file"
+                            id="file"
+                            accept="image/*"
+                            class="hidden"
+                        />
+                    </label>
+                    <div class="flex flex-wrap items-center gap-3 mt-4">
+                        <button
+                            type="button"
+                            id="upload"
+                            class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 font-semibold px-5 py-2.5 rounded-full transition btn-press"
+                        >
+                            Konversi & Upload
+                        </button>
+                        <span id="status" class="text-sm text-white/50"></span>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-display font-semibold">
+                            Galeri Saat Ini
+                            <span
+                                id="count"
+                                class="text-white/40 font-normal"
+                            >
+                                (0)
+                            </span>
+                        </h2>
+                        <button
+                            type="button"
+                            id="refresh"
+                            class="text-sm text-white/60 hover:text-white transition"
+                        >
+                            Muat ulang
+                        </button>
+                    </div>
+                    <div
+                        class="bg-dark-800/40 border border-white/5 rounded-2xl p-3 overflow-x-auto"
+                    >
+                        <div
+                            class="flex items-center gap-3 mb-2"
+                            id="gallery-bulk-bar"
+                        >
+                            <button
+                                type="button"
+                                id="gallery-bulk"
+                                class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-300/80 text-xs font-medium transition"
+                            >
+                                Hapus Terpilih (<span id="gallery-bulk-count">0</span>)
+                            </button>
+                        </div>
+                        <table
+                            id="tbl-gallery"
+                            class="w-full table-fixed text-sm text-white/80"
+                        >
+                            <thead>
+                                <tr class="text-left text-xs text-white/40">
+                                    <th class="w-8">
+                                        <input
+                                            type="checkbox"
+                                            id="sel-all-g"
+                                            class="accent-yellow-400"
+                                        />
+                                    </th>
+                                    <th class="w-16">Foto</th>
+                                    <th>Nama File</th>
+                                    <th class="w-24">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="panel-nota" class="hidden">
+                <div class="grid gap-6">
+                    <form id="nota-form" class="space-y-4">
+                        <div
+                            class="bg-dark-800/70 border border-white/5 rounded-2xl p-5"
+                        >
+                            <h3 class="font-display font-semibold mb-3">
+                                Informasi Nota
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label
+                                        class="block text-xs text-white/40 mb-1"
+                                    >
+                                        Nomor Nota
+                                    </label>
+                                    <input
+                                        id="nota-number"
+                                        type="text"
+                                        class="inp"
+                                        placeholder="NOT-2026-0001"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs text-white/40 mb-1"
+                                    >
+                                        Tanggal
+                                    </label>
+                                    <input id="nota-date" type="date" class="inp" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800/70 border border-white/5 rounded-2xl p-5"
+                        >
+                            <h3 class="font-display font-semibold mb-3">
+                                Pelanggan
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label
+                                        class="block text-xs text-white/40 mb-1"
+                                    >
+                                        Nama / Tim
+                                    </label>
+                                    <input
+                                        id="nota-customer"
+                                        type="text"
+                                        class="inp"
+                                        placeholder="Contoh: FC Garuda"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs text-white/40 mb-1"
+                                    >
+                                        No. WhatsApp
+                                    </label>
+                                    <input
+                                        id="nota-wa-input"
+                                        type="text"
+                                        class="inp"
+                                        placeholder="0812xxxxxxx"
+                                    />
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label
+                                    class="block text-xs text-white/40 mb-1"
+                                >
+                                    Alamat / Kota (opsional)
+                                </label>
+                                <input
+                                    id="nota-address"
+                                    type="text"
+                                    class="inp"
+                                    placeholder="Yogyakarta"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800/70 border border-white/5 rounded-2xl p-5"
+                        >
+                            <h3 class="font-display font-semibold mb-3">
+                                Item Nota
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <div class="grid grid-cols-[minmax(0,1fr)_4.5rem_7rem_8.5rem_2rem] gap-2 mb-1 px-1 text-xs text-white/40">
+                                    <span class="font-medium">Nama / Desain</span>
+                                    <span class="font-medium">Qty</span>
+                                    <span class="font-medium">Harga</span>
+                                    <span class="font-medium text-right">Jumlah</span>
+                                    <span></span>
+                                </div>
+                                <div id="nota-items" class="space-y-2"></div>
+                            </div>
+                            <button
+                                type="button"
+                                id="add-item"
+                                class="mt-3 text-sm text-brand-400 hover:text-brand-300 transition"
+                            >
+                                + Tambah Baris
+                            </button>
+                            <div class="mt-3 flex items-center justify-between gap-3">
+                                <label class="text-sm text-white/60">
+                                    Diskon (Rp)
+                                </label>
+                                <input
+                                    id="nota-discount"
+                                    type="number"
+                                    min="0"
+                                    value="0"
+                                    class="inp !w-32"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800/70 border border-white/5 rounded-2xl p-5"
+                        >
+                            <label
+                                class="block text-xs text-white/40 mb-1"
+                            >
+                                Keterangan / Term
+                            </label>
+                            <textarea
+                                id="nota-notes"
+                                rows="2"
+                                class="inp"
+                                placeholder="Contoh: DP 50%, pelunasan sebelum kirim."
+                            ></textarea>
+                            <p
+                                id="nota-total"
+                                class="mt-3 text-right font-display font-bold text-brand-400 text-lg"
+                            >
+                                Total: Rp 0
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3 items-center no-print">
+                            <button
+                                type="button"
+                                id="nota-print"
+                                class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-400 text-dark-950 font-semibold px-5 py-2.5 rounded-full transition btn-press"
+                            >
+                                Cetak / Simpan PDF
+                            </button>
+                            <button
+                                type="button"
+                                id="nota-wa"
+                                class="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white/80 font-medium px-5 py-2.5 rounded-full transition btn-press"
+                            >
+                                Kirim ke WhatsApp
+                            </button>
+                            <span id="nota-status" class="text-sm text-white/50"></span>
+                        </div>
+                    </form>
+
+                    <div>
+                        <p class="text-xs text-white/40 mb-2 no-print">
+                            Preview nota
+                        </p>
+                        <div
+                            id="nota-sheet"
+                            class="bg-white text-slate-900 rounded-lg shadow-xl p-6 sm:p-8 text-sm"
+                        ></div>
+                    </div>
                 </div>
-                <div
-                    id="list"
-                    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
-                ></div>
-            </section>
+
+                <section class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-display font-semibold">
+                            Nota Tersimpan
+                            <span
+                                id="nota-count"
+                                class="text-white/40 font-normal"
+                            >
+                                (0)
+                            </span>
+                        </h2>
+                        <button
+                            type="button"
+                            id="nota-refresh"
+                            class="text-sm text-white/60 hover:text-white transition"
+                        >
+                            Muat ulang
+                        </button>
+                    </div>
+                    <div
+                        class="bg-dark-800/40 border border-white/5 rounded-2xl p-3 overflow-x-auto"
+                    >
+                        <div class="flex items-center gap-3 mb-2">
+                            <button
+                                type="button"
+                                id="nota-bulk"
+                                class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-300/80 text-xs font-medium transition"
+                            >
+                                Hapus Terpilih (<span id="nota-bulk-count">0</span>)
+                            </button>
+                        </div>
+                        <table
+                            id="tbl-nota"
+                            class="w-full table-fixed text-sm text-white/80"
+                        >
+                            <thead>
+                                <tr class="text-left text-xs text-white/40">
+                                    <th class="w-8">
+                                        <input
+                                            type="checkbox"
+                                            id="sel-all-n"
+                                            class="accent-yellow-400"
+                                        />
+                                    </th>
+                                    <th>No. Nota</th>
+                                    <th class="w-28">Tanggal</th>
+                                    <th>Pelanggan</th>
+                                    <th class="w-28 text-right">Total</th>
+                                    <th class="w-32">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
+
+    <style is:global>
+        .inp {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+            outline: none;
+        }
+        .inp:focus {
+            border-color: rgba(254, 240, 19, 0.5);
+        }
+        .inp::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+        #nota-sheet table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #nota-sheet th,
+        #nota-sheet td {
+            border: 1px solid #cbd5e1;
+            padding: 4px 8px;
+            text-align: left;
+        }
+        #nota-sheet th {
+            background: #f1f5f9;
+        }
+        #nota-sheet .num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.8rem;
+            margin: 0 0.25rem;
+        }
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: rgba(255, 255, 255, 0.85) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            border-radius: 0.4rem;
+            padding: 0.2rem 0.7rem !important;
+            margin: 0 2px;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #fef013 !important;
+            color: #020617 !important;
+            border-color: #fef013 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+            opacity: 0.4 !important;
+        }
+        #tbl-gallery,
+        #tbl-nota {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        #tbl-gallery thead th,
+        #tbl-nota thead th {
+            color: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+        #tbl-gallery tbody td,
+        #tbl-nota tbody td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .dataTables_wrapper .dataTables_processing {
+            background: rgba(2, 6, 23, 0.8) !important;
+        }
+        @media print {
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+            body {
+                background: #fff !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #nota-sheet,
+            #nota-sheet * {
+                visibility: visible;
+            }
+            #nota-sheet {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                box-shadow: none !important;
+                border-radius: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"
+    />
+    <script
+        is:inline
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+    ></script>
+    <script
+        is:inline
+        src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"
+    ></script>
 
     <script>
         import {
@@ -182,7 +595,6 @@ import Layout from "../layouts/Layout.astro";
         const dropLabel = document.getElementById("drop-label");
         const uploadBtn = document.getElementById("upload");
         const statusEl = document.getElementById("status");
-        const listEl = document.getElementById("list");
         const countEl = document.getElementById("count");
         const refreshBtn = document.getElementById("refresh");
 
@@ -230,42 +642,99 @@ import Layout from "../layouts/Layout.astro";
             });
         }
 
-        function renderList(rows) {
-            countEl.textContent = `(${rows.length})`;
-            listEl.innerHTML = "";
-            if (!rows.length) {
-                listEl.innerHTML =
-                    '<p class="text-sm text-white/40 col-span-full">Belum ada gambar.</p>';
+        // --- Galeri (DataTable) ---
+        const selG = new Set();
+        let gTable = null;
+        let galleryStore = [];
+
+        const gCheckHtml = (row) =>
+            `<input type="checkbox" class="g-check accent-yellow-400" data-id="${row.id}" ${selG.has(row.id) ? "checked" : ""} />`;
+        const gThumbHtml = (row) =>
+            `<div class="w-14"><img src="${getPublicUrl(row.path)}" alt="${row.path}" loading="lazy" class="h-14 w-14 object-contain rounded bg-dark-900"></div>`;
+        const gActionHtml = (row) =>
+            `<button type="button" class="g-del text-red-300/80 hover:text-red-300" data-id="${row.id}" data-path="${row.path}" title="Hapus">Hapus</button>`;
+
+        function galleryFallback(data) {
+            const tbody = document.querySelector("#tbl-gallery tbody");
+            tbody.innerHTML = "";
+            (data || []).forEach((row) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td><input type="checkbox" class="g-check" data-id="${row.id}"></td>
+                    <td><img src="${getPublicUrl(row.path)}" class="h-14 w-14 object-contain rounded" alt="${row.path}"></td>
+                    <td>${row.path}</td><td>${gActionHtml(row)}</td>`;
+                tr.querySelector(".g-check").addEventListener("change", function () {
+                    if (this.checked) selG.add(row.id);
+                    else selG.delete(row.id);
+                    updateGalleryBulk();
+                });
+                tr.querySelector(".g-del").addEventListener("click", () => removeImage(row));
+                tbody.appendChild(tr);
+            });
+            updateGalleryBulk();
+        }
+
+        function initGalleryTable(data) {
+            galleryStore = data || [];
+            countEl.textContent = `(${galleryStore.length})`;
+            if (!window.jQuery || !window.jQuery.fn.DataTable) {
+                galleryFallback(galleryStore);
                 return;
             }
-            rows.forEach((row) => {
-                const card = document.createElement("div");
-                card.className =
-                    "group aspect-[4/3] rounded-xl overflow-hidden border border-white/5 bg-dark-800 relative";
-
-                const img = document.createElement("img");
-                img.src = getPublicUrl(row.path);
-                img.alt = row.path;
-                img.loading = "lazy";
-                img.className = "w-full h-full object-contain";
-                card.appendChild(img);
-
-                const remove = document.createElement("button");
-                remove.type = "button";
-                remove.textContent = "Hapus";
-                remove.className =
-                    "absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-red-500/80 hover:bg-red-500 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition";
-                remove.addEventListener("click", () => removeImage(row));
-                card.appendChild(remove);
-
-                const label = document.createElement("span");
-                label.textContent = row.path;
-                label.className =
-                    "absolute bottom-0 left-0 right-0 px-2 py-1 bg-dark-950/70 text-[10px] text-white/60 truncate";
-                card.appendChild(label);
-
-                listEl.appendChild(card);
+            if (gTable) gTable.destroy();
+            gTable = $("#tbl-gallery").DataTable({
+                data: galleryStore,
+                columns: [
+                    { data: null, orderable: false, render: (d) => gCheckHtml(d) },
+                    { data: null, orderable: false, render: (d) => gThumbHtml(d) },
+                    { data: "path" },
+                    { data: null, orderable: false, render: (d) => gActionHtml(d) },
+                ],
+                columnDefs: [
+                    { targets: 0, width: 40 },
+                    { targets: 1, width: 64 },
+                    { targets: 3, width: 80, className: "text-center" },
+                ],
+                autoWidth: false,
+                order: [[2, "asc"]],
+                pageLength: 10,
+                lengthMenu: [10, 20, 30, 40, 50],
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.8/i18n/id.json",
+                },
             });
+
+            $("#tbl-gallery tbody")
+                .off("change", ".g-check")
+                .on("change", ".g-check", function () {
+                    const id = $(this).data("id");
+                    if (this.checked) selG.add(id);
+                    else selG.delete(id);
+                    updateGalleryBulk();
+                });
+            $("#tbl-gallery tbody")
+                .off("click", ".g-del")
+                .on("click", ".g-del", function () {
+                    const id = $(this).data("id");
+                    const path = $(this).data("path");
+                    removeImage({ id, path });
+                });
+            $("#sel-all-g")
+                .off("change")
+                .on("change", function () {
+                    $("#tbl-gallery tbody .g-check").each(function () {
+                        const id = $(this).data("id");
+                        if (this.checked) selG.add(id);
+                        else selG.delete(id);
+                    });
+                    updateGalleryBulk();
+                });
+            updateGalleryBulk();
+        }
+
+        function updateGalleryBulk() {
+            document.getElementById("gallery-bulk-count").textContent =
+                selG.size;
+            document.getElementById("gallery-bulk").disabled = selG.size === 0;
         }
 
         async function loadList() {
@@ -277,7 +746,7 @@ import Layout from "../layouts/Layout.astro";
                 setStatus("Gagal memuat daftar: " + error.message, "error");
                 return;
             }
-            renderList(data || []);
+            initGalleryTable(data || []);
         }
 
         async function removeImage(row) {
@@ -297,9 +766,27 @@ import Layout from "../layouts/Layout.astro";
                 setStatus("Gagal hapus data: " + error.message, "error");
                 return;
             }
+            selG.delete(row.id);
             setStatus("Dihapus: " + row.path, "ok");
             loadList();
         }
+
+        async function removeSelectedGallery() {
+            const rows = galleryStore.filter((r) => selG.has(r.id));
+            if (!rows.length) return;
+            if (!window.confirm(`Hapus ${rows.length} gambar terpilih?`)) return;
+            for (const row of rows) {
+                await supabase.storage.from(SUPABASE_BUCKET).remove([row.path]);
+                await supabase.from("portfolios").delete().eq("id", row.id);
+            }
+            selG.clear();
+            setStatus(`Dihapus ${rows.length} gambar`, "ok");
+            loadList();
+        }
+
+        document
+            .getElementById("gallery-bulk")
+            .addEventListener("click", removeSelectedGallery);
 
         function showView(name) {
             loginView.classList.toggle("hidden", name !== "login");
@@ -399,6 +886,521 @@ import Layout from "../layouts/Layout.astro";
             });
 
             refreshBtn.addEventListener("click", loadList);
+
+            // ---------- Tabs: Upload / Nota Online ----------
+            const tabUpload = document.getElementById("tab-upload");
+            const tabNota = document.getElementById("tab-nota");
+            const panelUpload = document.getElementById("panel-upload");
+            const panelNota = document.getElementById("panel-nota");
+
+            function setTab(which) {
+                const onUpload = which === "upload";
+                panelUpload.classList.toggle("hidden", !onUpload);
+                panelNota.classList.toggle("hidden", onUpload);
+                const activeTab =
+                    "px-4 py-2 rounded-lg text-sm font-medium transition bg-brand-500 text-dark-950";
+                const idleTab =
+                    "px-4 py-2 rounded-lg text-sm font-medium transition bg-white/5 text-white/70 hover:bg-white/10";
+                tabUpload.className = onUpload ? activeTab : idleTab;
+                tabNota.className = onUpload ? idleTab : activeTab;
+            }
+            tabUpload.addEventListener("click", () => setTab("upload"));
+            tabNota.addEventListener("click", () => setTab("nota"));
+
+            // ---------- Nota Online ----------
+            const STORE = {
+                name: "SURLY APPAREL",
+                tagline: "Konveksi Jersey & Seragam Custom",
+                phone: "0813-9404-4067",
+                wa: "6281394044067",
+                address: "Jatiseeng Kidul, Ciledug, Cirebon, Jawa Barat 45188",
+            };
+
+            const notaSheet = document.getElementById("nota-sheet");
+            const notaItemsTbody = document.getElementById("nota-items");
+            const notaForm = document.getElementById("nota-form");
+            const notaTotal = document.getElementById("nota-total");
+
+            const fmt = (n) =>
+                "Rp " +
+                (Math.round(n) || 0).toLocaleString("id-ID");
+
+            function dateToday() {
+                const d = new Date();
+                return (
+                    d.getFullYear() +
+                    "-" +
+                    String(d.getMonth() + 1).padStart(2, "0") +
+                    "-" +
+                    String(d.getDate()).padStart(2, "0")
+                );
+            }
+
+            function itemRow(nama = "", qty = 1, harga = 0) {
+                const row = document.createElement("div");
+                row.className =
+                    "nota-row grid grid-cols-[minmax(0,1fr)_4.5rem_7rem_8.5rem_2rem] gap-2 items-center";
+                row.innerHTML = `
+                    <input type="text" class="inp f-nama min-w-0" value="${esc(nama)}" placeholder="Contoh: Jersey Home FC" />
+                    <input type="number" min="1" class="inp f-qty" value="${qty}" />
+                    <input type="number" min="0" class="inp f-harga" value="${harga}" />
+                    <div class="f-jumlah text-right text-white/80 text-sm truncate"></div>
+                    <button type="button" class="del-row text-red-300/80 hover:text-red-300 text-lg leading-none" title="Hapus">&times;</button>
+                `;
+                notaItemsTbody.appendChild(row);
+            }
+
+            function readItems() {
+                return Array.from(
+                    notaItemsTbody.querySelectorAll(".nota-row"),
+                ).map((row) => ({
+                    nama: row.querySelector(".f-nama").value,
+                    qty: Math.max(
+                        1,
+                        parseInt(row.querySelector(".f-qty").value, 10) || 1,
+                    ),
+                    harga:
+                        parseInt(row.querySelector(".f-harga").value, 10) || 0,
+                }));
+            }
+
+            function updateTotals() {
+                const rows = notaItemsTbody.querySelectorAll(".nota-row");
+                let subtotal = 0;
+                rows.forEach((row) => {
+                    const qty =
+                        Math.max(
+                            1,
+                            parseInt(row.querySelector(".f-qty").value, 10) || 1,
+                        );
+                    const harga =
+                        parseInt(row.querySelector(".f-harga").value, 10) || 0;
+                    const jumlah = qty * harga;
+                    row.querySelector(".f-jumlah").textContent = fmt(jumlah);
+                    subtotal += jumlah;
+                });
+                const discount = Math.max(
+                    0,
+                    parseInt(
+                        document.getElementById("nota-discount").value,
+                        10,
+                    ) || 0,
+                );
+                const total = Math.max(0, subtotal - discount);
+                notaTotal.textContent = "Total: " + fmt(total);
+                return { subtotal, discount, total };
+            }
+
+            function esc(s) {
+                return (s || "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+            }
+
+            function renderNota() {
+                const no =
+                    document.getElementById("nota-number").value || "NOT-0000";
+                const date = document.getElementById("nota-date").value || dateToday();
+                const customer =
+                    document.getElementById("nota-customer").value || "-";
+                const notes =
+                    document.getElementById("nota-notes").value || "";
+                const items = readItems();
+                const { subtotal, discount, total } = updateTotals();
+                const tgl = date
+                    ? new Date(date + "T00:00:00").toLocaleDateString("id-ID", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                      })
+                    : "-";
+
+                const rows = items
+                    .map(
+                        (it, i) => `<tr>
+                          <td>${i + 1}</td>
+                          <td>${esc(it.nama) || "-"}</td>
+                          <td class="num">${it.qty}</td>
+                          <td class="num">${fmt(it.harga)}</td>
+                          <td class="num">${fmt(it.qty * it.harga)}</td>
+                        </tr>`,
+                    )
+                    .join("");
+
+                notaSheet.innerHTML = `
+                  <div class="flex items-start justify-between border-b-2 border-slate-800 pb-3">
+                    <div class="flex items-center gap-3">
+                      <img src="/logo.png" alt="logo" class="w-12 h-12 object-contain" />
+                      <div>
+                        <div class="font-display font-extrabold text-base text-slate-900">${esc(STORE.name)}</div>
+                        <div class="text-xs text-slate-500">${esc(STORE.tagline)}</div>
+                        <div class="text-xs text-slate-500">${esc(STORE.address)}</div>
+                      </div>
+                    </div>
+                    <div class="text-right text-xs text-slate-500">
+                      <div>WA: ${esc(STORE.phone)}</div>
+                      <div>${esc(STORE.ig)}</div>
+                    </div>
+                  </div>
+
+                  <div class="text-center my-3">
+                    <div class="font-display text-lg font-bold tracking-wide">NOTA PENJUALAN</div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+                    <div><span class="text-slate-500">Nomor :</span> <b>${esc(no)}</b></div>
+                    <div class="text-right"><span class="text-slate-500">Tanggal :</span> <b>${tgl}</b></div>
+<div class="col-span-2"><span class="text-slate-500">Pelanggan :</span> <b>${esc(customer)}</b></div>
+                  </div>
+
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="width:32px">No</th>
+                        <th>Nama / Desain</th>
+                        <th class="num" style="width:60px">Qty</th>
+                        <th class="num" style="width:110px">Harga</th>
+                        <th class="num" style="width:120px">Jumlah</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${rows || '<tr><td colspan="5" class="text-center text-slate-400">— belum ada item —</td></tr>'}
+                    </tbody>
+                  </table>
+
+                  <div class="mt-3 flex justify-end text-sm">
+                    <table style="width:auto;border-collapse:collapse">
+                      <tr><td class="py-1 pr-6 text-slate-600">Subtotal</td><td class="py-1 num"><b>${fmt(subtotal)}</b></td></tr>
+                      <tr><td class="py-1 pr-6 text-slate-600">Diskon</td><td class="py-1 num">- ${fmt(discount)}</td></tr>
+                      <tr>
+                        <td class="py-2 pr-6 font-bold uppercase">Total</td>
+                        <td class="py-2 num font-bold bg-slate-100 px-2">${fmt(total)}</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  ${
+                      notes
+                          ? `<div class="mt-3 text-xs text-slate-600 border-t border-slate-200 pt-2">${esc(notes)}</div>`
+                          : ""
+                  }
+                `;
+            }
+
+            notaForm.addEventListener("input", renderNota);
+            notaItemsTbody.addEventListener("click", (e) => {
+                if (e.target.classList.contains("del-row")) {
+                    e.target.closest(".nota-row").remove();
+                    renderNota();
+                }
+            });
+            document.getElementById("add-item").addEventListener("click", () => {
+                itemRow();
+                renderNota();
+            });
+
+            const notaStatus = document.getElementById("nota-status");
+            const notaCount = document.getElementById("nota-count");
+
+            // --- Nota tersimpan (DataTable) ---
+            const selN = new Set();
+            let nTable = null;
+            let notaStore = [];
+
+            function notaStatusMsg(msg, kind) {
+                notaStatus.textContent = msg || "";
+                notaStatus.className =
+                    "text-sm " +
+                    (kind === "ok"
+                        ? "text-emerald-300"
+                        : kind === "error"
+                          ? "text-red-300"
+                          : "text-white/50");
+            }
+
+            function buildNotaData() {
+                renderNota();
+                const items = readItems();
+                const { subtotal, discount, total } = updateTotals();
+                return {
+                    nota_number:
+                        document.getElementById("nota-number").value || "NOT-0000",
+                    nota_date:
+                        document.getElementById("nota-date").value || dateToday(),
+                    customer_name:
+                        document.getElementById("nota-customer").value || "",
+                    customer_wa:
+                        document.getElementById("nota-wa-input").value || "",
+                    customer_address:
+                        document.getElementById("nota-address").value || "",
+                    items,
+                    subtotal,
+                    discount,
+                    total,
+                    notes: document.getElementById("nota-notes").value || "",
+                };
+            }
+
+            async function saveNota() {
+                const data = buildNotaData();
+                const { error } = await supabase.from("notas").insert(data);
+                if (error) throw error;
+                return data;
+            }
+
+            const nCheckHtml = (row) =>
+                `<input type="checkbox" class="n-check accent-yellow-400" data-id="${row.id}" ${selN.has(row.id) ? "checked" : ""} />`;
+            const nActionHtml = (row) =>
+                `<div class="flex gap-2">
+                    <button type="button" class="n-load px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/80 text-xs" data-id="${row.id}">Muat</button>
+                    <button type="button" class="n-del px-2.5 py-1 rounded-lg bg-white/5 hover:bg-red-500/20 text-red-300/80 text-xs" data-id="${row.id}" data-no="${row.nota_number}">Hapus</button>
+                </div>`;
+
+            function notaFallback(data) {
+                const tbody = document.querySelector("#tbl-nota tbody");
+                tbody.innerHTML = "";
+                (data || []).forEach((row) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td><input type="checkbox" class="n-check" data-id="${row.id}"></td>
+                        <td>${esc(row.nota_number)}</td><td>${esc((row.nota_date || "").slice(0, 10))}</td>
+                        <td>${esc(row.customer_name) || "-"}</td><td class="text-right">${fmt(row.total)}</td>
+                        <td>${nActionHtml(row)}</td>`;
+                    tr.querySelector(".n-check").addEventListener("change", function () {
+                        if (this.checked) selN.add(row.id);
+                        else selN.delete(row.id);
+                        updateNotaBulk();
+                    });
+                    tr.querySelector(".n-load").addEventListener("click", () => fillNota(row.id));
+                    tr.querySelector(".n-del").addEventListener("click", () => deleteNota(row.id, row.nota_number));
+                    tbody.appendChild(tr);
+                });
+                updateNotaBulk();
+            }
+
+            function initNotaTable(data) {
+                notaStore = data || [];
+                notaCount.textContent = `(${notaStore.length})`;
+                if (!window.jQuery || !window.jQuery.fn.DataTable) {
+                    notaFallback(notaStore);
+                    return;
+                }
+                if (nTable) nTable.destroy();
+                nTable = $("#tbl-nota").DataTable({
+                    data: notaStore,
+                    columns: [
+                        { data: null, orderable: false, render: (d) => nCheckHtml(d) },
+                        { data: "nota_number" },
+                        { data: "nota_date", render: (d) => (d || "").slice(0, 10) },
+                        { data: "customer_name", render: (d) => esc(d) || "-" },
+                        { data: "total", render: (d) => `<span class="text-brand-400">${fmt(d)}</span>` },
+                        { data: null, orderable: false, render: (d) => nActionHtml(d) },
+                    ],
+                    columnDefs: [
+                        { targets: 0, width: 40 },
+                        { targets: 1, width: 150 },
+                        { targets: 2, width: 130 },
+                        { targets: 4, width: 130, className: "text-right" },
+                        { targets: 5, width: 140 },
+                    ],
+                    autoWidth: false,
+                    order: [[1, "desc"]],
+                    pageLength: 10,
+                    lengthMenu: [10, 20, 30, 40, 50],
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.13.8/i18n/id.json",
+                    },
+                });
+
+                $("#tbl-nota tbody")
+                    .off("change", ".n-check")
+                    .on("change", ".n-check", function () {
+                        const id = $(this).data("id");
+                        if (this.checked) selN.add(id);
+                        else selN.delete(id);
+                        updateNotaBulk();
+                    });
+                $("#tbl-nota tbody")
+                    .off("click", ".n-load")
+                    .on("click", ".n-load", function () {
+                        fillNota($(this).data("id"));
+                    });
+                $("#tbl-nota tbody")
+                    .off("click", ".n-del")
+                    .on("click", ".n-del", function () {
+                        deleteNota($(this).data("id"), $(this).data("no"));
+                    });
+                $("#sel-all-n")
+                    .off("change")
+                    .on("change", function () {
+                        $("#tbl-nota tbody .n-check").each(function () {
+                            const id = $(this).data("id");
+                            if (this.checked) selN.add(id);
+                            else selN.delete(id);
+                        });
+                        updateNotaBulk();
+                    });
+                updateNotaBulk();
+            }
+
+            function updateNotaBulk() {
+                document.getElementById("nota-bulk-count").textContent =
+                    selN.size;
+                document.getElementById("nota-bulk").disabled = selN.size === 0;
+            }
+
+            async function loadNotas() {
+                const { data, error } = await supabase
+                    .from("notas")
+                    .select("id,nota_number,nota_date,customer_name,total,created_at")
+                    .order("created_at", { ascending: false });
+                if (error) {
+                    notaStatusMsg("Gagal memuat nota: " + error.message, "error");
+                    return;
+                }
+                initNotaTable(data || []);
+            }
+
+            async function fillNota(id) {
+                const { data, error } = await supabase
+                    .from("notas")
+                    .select("*")
+                    .eq("id", id)
+                    .single();
+                if (error || !data) {
+                    notaStatusMsg("Gagal memuat nota.", "error");
+                    return;
+                }
+                document.getElementById("nota-number").value = data.nota_number || "";
+                document.getElementById("nota-date").value = (data.nota_date || "").slice(0, 10);
+                document.getElementById("nota-customer").value = data.customer_name || "";
+                document.getElementById("nota-wa-input").value = data.customer_wa || "";
+                document.getElementById("nota-address").value = data.customer_address || "";
+                document.getElementById("nota-discount").value = data.discount || 0;
+                document.getElementById("nota-notes").value = data.notes || "";
+                notaItemsTbody.innerHTML = "";
+                (data.items || []).forEach((it) =>
+                    itemRow(it.nama, it.qty, it.harga),
+                );
+                renderNota();
+                notaStatusMsg("Nota dimuat.", "ok");
+                setTab("nota");
+            }
+
+            async function deleteNota(id, no) {
+                if (!window.confirm(`Hapus nota "${no}" ?`)) return;
+                const { error } = await supabase
+                    .from("notas")
+                    .delete()
+                    .eq("id", id);
+                if (error) {
+                    notaStatusMsg("Gagal hapus: " + error.message, "error");
+                    return;
+                }
+                selN.delete(id);
+                notaStatusMsg("Nota dihapus.", "ok");
+                loadNotas();
+            }
+
+            async function removeSelectedNota() {
+                const rows = notaStore.filter((r) => selN.has(r.id));
+                if (!rows.length) return;
+                if (!window.confirm(`Hapus ${rows.length} nota terpilih?`)) return;
+                const ids = rows.map((r) => r.id);
+                const { error } = await supabase
+                    .from("notas")
+                    .delete()
+                    .in("id", ids);
+                if (error) {
+                    notaStatusMsg("Gagal hapus: " + error.message, "error");
+                    return;
+                }
+                selN.clear();
+                notaStatusMsg(`Dihapus ${rows.length} nota`, "ok");
+                loadNotas();
+            }
+
+            document
+                .getElementById("nota-bulk")
+                .addEventListener("click", removeSelectedNota);
+
+            document
+                .getElementById("nota-print")
+                .addEventListener("click", async () => {
+                    try {
+                        await saveNota();
+                        notaStatusMsg("Tersimpan ke Supabase.", "ok");
+                        loadNotas();
+                    } catch (error) {
+                        notaStatusMsg("Simpan gagal: " + error.message, "error");
+                    }
+                    setTimeout(() => window.print(), 200);
+                });
+            document
+                .getElementById("nota-wa")
+                .addEventListener("click", async () => {
+                    try {
+                        await saveNota();
+                        notaStatusMsg("Tersimpan lalu kirim WA.", "ok");
+                        loadNotas();
+                    } catch (error) {
+                        notaStatusMsg("Simpan gagal: " + error.message, "error");
+                    }
+                    renderNota();
+                    const no =
+                        document.getElementById("nota-number").value ||
+                        "NOT-0000";
+                    const customer =
+                        document.getElementById("nota-customer").value || "-";
+                    const items = readItems();
+                    const lines = items
+                        .map((it) => `• ${it.nama || "-"} x${it.qty} = ${fmt(it.qty * it.harga)}`)
+                        .join("\n");
+                    const { total } = updateTotals();
+                    const msg = [
+                        `NOTA ONLINE ${STORE.name}`,
+                        `No: ${no}`,
+                        `Tanggal: ${document.getElementById("nota-date").value || dateToday()}`,
+                        `Pelanggan: ${customer}`,
+                        ``,
+                        lines || "• -",
+                        ``,
+                        `Total: ${fmt(total)}`,
+                        ``,
+                        document.getElementById("nota-notes").value || "",
+                    ]
+                        .filter((line) => line !== "")
+                        .join("\n");
+                    let target = STORE.wa;
+                    const waRaw = document
+                        .getElementById("nota-wa-input")
+                        .value.replace(/\D/g, "");
+                    if (waRaw) {
+                        target = waRaw.startsWith("0")
+                            ? "62" + waRaw.slice(1)
+                            : waRaw;
+                    }
+                    window.open(
+                        "https://wa.me/" +
+                            target +
+                            "?text=" +
+                            encodeURIComponent(msg),
+                        "_blank",
+                    );
+                });
+
+            document
+                .getElementById("nota-refresh")
+                .addEventListener("click", loadNotas);
+
+            // Initialise nota
+            loadNotas();
+            document.getElementById("nota-date").value = dateToday();
+            document.getElementById(
+                "nota-number",
+            ).value = "NOT-" + dateToday().replaceAll("-", "") + "-001";
+            itemRow();
+            renderNota();
         }
     </script>
 </Layout>

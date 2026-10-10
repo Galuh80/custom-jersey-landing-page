@@ -69,5 +69,7 @@ jobs:
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "::error::CLOUDFLARE_API_TOKEN is empty"; exit 1; fi
           if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then echo "::error::CLOUDFLARE_ACCOUNT_ID is empty"; exit 1; fi
           if [ -z "$CF_PROJECT" ]; then echo "::error::CLOUDFLARE_PROJECT_NAME is empty"; exit 1; fi
+          echo "Creating project if it does not exist..."
+          npx --yes wrangler@3 pages project create "$CF_PROJECT" --production-branch=main >/dev/null 2>&1 || true
           echo "Deploying dist/ to Cloudflare Pages project: $CF_PROJECT"
           npx --yes wrangler@3 pages deploy dist --project-name="$CF_PROJECT" --branch=main

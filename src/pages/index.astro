@@ -1,9 +1,12 @@
 ---
 import fs from "node:fs";
-import path from "node:path";
+import { fileURLToPath } from "node:url";
 import Layout from "../layouts/Layout.astro";
 
-const portfolioDir = path.join(process.cwd(), "public", "portfolio");
+// Resolve relative to this file so it works regardless of process.cwd().
+const portfolioDir = fileURLToPath(
+    new URL("../../public/portfolio/", import.meta.url),
+);
 let gallery = [];
 try {
     gallery = fs
@@ -17,7 +20,11 @@ try {
         )
         .map((file) => `/portfolio/${file}`);
 } catch {
-    gallery = [];
+    // Fallback if the folder can't be read at build time (e.g. CI working dir).
+    gallery = Array.from(
+        { length: 16 },
+        (_, i) => `/portfolio/portfolio-${i + 1}.webp`,
+    );
 }
 
 const benefits = [

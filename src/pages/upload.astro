@@ -1,13 +1,17 @@
 ---
 import fs from "node:fs";
-import path from "node:path";
+import { fileURLToPath } from "node:url";
 import Layout from "../layouts/Layout.astro";
 
 // Built-in images shipped in /public/portfolio/, mixed with Supabase uploads.
+// Resolved relative to this file so it works regardless of process.cwd().
 let localPortfolio = [];
 try {
+    const portfolioDir = fileURLToPath(
+        new URL("../../public/portfolio/", import.meta.url),
+    );
     localPortfolio = fs
-        .readdirSync(path.join(process.cwd(), "public", "portfolio"))
+        .readdirSync(portfolioDir)
         .filter((file) => /\.(webp|jpe?g|png|gif|avif)$/i.test(file))
         .sort((a, b) =>
             a.localeCompare(b, undefined, {
@@ -16,7 +20,10 @@ try {
             }),
         );
 } catch {
-    localPortfolio = [];
+    localPortfolio = Array.from(
+        { length: 16 },
+        (_, i) => `portfolio-${i + 1}.webp`,
+    );
 }
 ---
 

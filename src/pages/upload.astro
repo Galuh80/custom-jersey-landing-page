@@ -222,7 +222,7 @@ import Layout from "../layouts/Layout.astro";
                             <h3 class="font-display font-semibold mb-3">
                                 Informasi Nota
                             </h3>
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label
                                         class="block text-xs text-white/40 mb-1"
@@ -303,14 +303,16 @@ import Layout from "../layouts/Layout.astro";
                                 Item Nota
                             </h3>
                             <div class="overflow-x-auto">
-                                <div class="grid grid-cols-[minmax(0,1fr)_4.5rem_7rem_8.5rem_2rem] gap-2 mb-1 px-1 text-xs text-white/40">
-                                    <span class="font-medium">Nama / Desain</span>
-                                    <span class="font-medium">Qty</span>
-                                    <span class="font-medium">Harga</span>
-                                    <span class="font-medium text-right">Jumlah</span>
-                                    <span></span>
+                                <div class="min-w-0">
+                                    <div class="hidden sm:grid grid-cols-[minmax(0,1fr)_3.75rem_6rem_7rem_1.75rem] gap-1.5 mb-1 px-1 text-xs text-white/40">
+                                        <span class="font-medium">Nama / Desain</span>
+                                        <span class="font-medium">Qty</span>
+                                        <span class="font-medium">Harga</span>
+                                        <span class="font-medium text-right">Jumlah</span>
+                                        <span></span>
+                                    </div>
+                                    <div id="nota-items" class="space-y-3 sm:space-y-2"></div>
                                 </div>
-                                <div id="nota-items" class="space-y-2"></div>
                             </div>
                             <button
                                 type="button"
@@ -380,7 +382,7 @@ import Layout from "../layouts/Layout.astro";
                         </p>
                         <div
                             id="nota-sheet"
-                            class="bg-white text-slate-900 rounded-lg shadow-xl p-6 sm:p-8 text-sm"
+                            class="bg-white text-slate-900 rounded-lg shadow-xl p-4 sm:p-8 text-sm"
                         ></div>
                     </div>
                 </div>
@@ -531,6 +533,46 @@ import Layout from "../layouts/Layout.astro";
         .dataTables_wrapper .dataTables_processing {
             background: rgba(2, 6, 23, 0.8) !important;
         }
+        #tbl-gallery td.dtr-control::before,
+        #tbl-nota td.dtr-control::before {
+            color: rgba(255, 255, 255, 0.75);
+        }
+        table.dataTable.dtr-inline.collapsed
+            > tbody
+            > tr
+            > td.dtr-control:before {
+            background-color: #fef013;
+            color: #020617;
+        }
+        table.dataTable.dtr-inline.collapsed
+            > tbody
+            > tr.parent
+            > td.dtr-control:before {
+            background-color: #fef013;
+            color: #020617;
+        }
+        ul.dtr-details {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.5);
+        }
+        ul.dtr-details li {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.25rem 0.5rem;
+        }
+        @media (max-width: 640px) {
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                text-align: left;
+                margin-bottom: 0.5rem;
+            }
+            .dataTables_wrapper .dataTables_filter input {
+                width: 100%;
+            }
+            .dataTables_wrapper .dataTables_paginate {
+                margin-top: 0.5rem;
+            }
+        }
         @media print {
             @page {
                 size: A4;
@@ -565,6 +607,10 @@ import Layout from "../layouts/Layout.astro";
         rel="stylesheet"
         href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"
     />
+    <link
+        rel="stylesheet"
+        href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"
+    />
     <script
         is:inline
         src="https://code.jquery.com/jquery-3.7.1.min.js"
@@ -572,6 +618,10 @@ import Layout from "../layouts/Layout.astro";
     <script
         is:inline
         src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"
+    ></script>
+    <script
+        is:inline
+        src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"
     ></script>
 
     <script>
@@ -690,11 +740,29 @@ import Layout from "../layouts/Layout.astro";
                     { data: null, orderable: false, render: (d) => gActionHtml(d) },
                 ],
                 columnDefs: [
-                    { targets: 0, width: 40 },
-                    { targets: 1, width: 64 },
-                    { targets: 3, width: 80, className: "text-center" },
+                    {
+                        targets: 0,
+                        width: 40,
+                        responsivePriority: 1,
+                    },
+                    {
+                        targets: 1,
+                        width: 64,
+                        responsivePriority: 4,
+                    },
+                    {
+                        targets: 2,
+                        responsivePriority: 1,
+                    },
+                    {
+                        targets: 3,
+                        width: 80,
+                        className: "text-center",
+                        responsivePriority: 2,
+                    },
                 ],
                 autoWidth: false,
+                responsive: !!(window.jQuery && window.jQuery.fn.DataTable.Responsive),
                 order: [[2, "asc"]],
                 pageLength: 10,
                 lengthMenu: [10, 20, 30, 40, 50],
@@ -939,13 +1007,25 @@ import Layout from "../layouts/Layout.astro";
             function itemRow(nama = "", qty = 1, harga = 0) {
                 const row = document.createElement("div");
                 row.className =
-                    "nota-row grid grid-cols-[minmax(0,1fr)_4.5rem_7rem_8.5rem_2rem] gap-2 items-center";
+                    "nota-row grid grid-cols-2 sm:grid-cols-[minmax(0,1fr)_3.75rem_6rem_7rem_1.75rem] gap-2 sm:gap-1.5 sm:items-center";
                 row.innerHTML = `
-                    <input type="text" class="inp f-nama min-w-0" value="${esc(nama)}" placeholder="Contoh: Jersey Home FC" />
-                    <input type="number" min="1" class="inp f-qty" value="${qty}" />
-                    <input type="number" min="0" class="inp f-harga" value="${harga}" />
-                    <div class="f-jumlah text-right text-white/80 text-sm truncate"></div>
-                    <button type="button" class="del-row text-red-300/80 hover:text-red-300 text-lg leading-none" title="Hapus">&times;</button>
+                    <div class="col-span-2 sm:col-span-1">
+                        <span class="sm:hidden block text-xs text-white/40 mb-1">Nama / Desain</span>
+                        <input type="text" class="inp f-nama min-w-0" value="${esc(nama)}" placeholder="Contoh: Jersey Home FC" />
+                    </div>
+                    <div>
+                        <span class="sm:hidden block text-xs text-white/40 mb-1">Qty</span>
+                        <input type="number" min="1" class="inp f-qty" value="${qty}" />
+                    </div>
+                    <div>
+                        <span class="sm:hidden block text-xs text-white/40 mb-1">Harga</span>
+                        <input type="number" min="0" class="inp f-harga" value="${harga}" />
+                    </div>
+                    <div>
+                        <span class="sm:hidden block text-xs text-white/40 mb-1">Jumlah</span>
+                        <div class="f-jumlah text-right text-white/80 text-sm truncate sm:py-2"></div>
+                    </div>
+                    <button type="button" class="del-row col-span-2 sm:col-span-1 justify-self-end sm:justify-self-auto sm:text-center text-red-300/80 hover:text-red-300 text-sm sm:text-lg leading-none"><span class="sm:hidden">Hapus</span><span class="hidden sm:inline">&times;</span></button>
                 `;
                 notaItemsTbody.appendChild(row);
             }
@@ -1197,13 +1277,39 @@ import Layout from "../layouts/Layout.astro";
                         { data: null, orderable: false, render: (d) => nActionHtml(d) },
                     ],
                     columnDefs: [
-                        { targets: 0, width: 40 },
-                        { targets: 1, width: 150 },
-                        { targets: 2, width: 130 },
-                        { targets: 4, width: 130, className: "text-right" },
-                        { targets: 5, width: 140 },
+                        {
+                            targets: 0,
+                            width: 40,
+                            responsivePriority: 1,
+                        },
+                        {
+                            targets: 1,
+                            width: 150,
+                            responsivePriority: 1,
+                        },
+                        {
+                            targets: 2,
+                            width: 130,
+                            responsivePriority: 4,
+                        },
+                        {
+                            targets: 3,
+                            responsivePriority: 2,
+                        },
+                        {
+                            targets: 4,
+                            width: 130,
+                            className: "text-right",
+                            responsivePriority: 2,
+                        },
+                        {
+                            targets: 5,
+                            width: 140,
+                            responsivePriority: 3,
+                        },
                     ],
                     autoWidth: false,
+                    responsive: !!(window.jQuery && window.jQuery.fn.DataTable.Responsive),
                     order: [[1, "desc"]],
                     pageLength: 10,
                     lengthMenu: [10, 20, 30, 40, 50],
